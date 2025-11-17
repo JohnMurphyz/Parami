@@ -6,6 +6,8 @@
  * last Parami to avoid back-to-back repeats).
  */
 
+import { getLocalDateString, toLocalDateString } from './dateUtils';
+
 /**
  * Fisher-Yates shuffle algorithm
  * Creates a truly random shuffle of the array
@@ -86,8 +88,8 @@ export function getNextParamiFromQueue(
 export function shouldRefreshForNewDay(lastRefreshDate?: string): boolean {
   if (!lastRefreshDate) return true;
 
-  const today = new Date().toISOString().split('T')[0];
-  const lastDate = lastRefreshDate.split('T')[0];
+  const today = getLocalDateString();
+  const lastDate = toLocalDateString(lastRefreshDate);
 
   return today !== lastDate;
 }

@@ -91,7 +91,13 @@ export default function TimeSetupScreen() {
         <>
           <View style={styles.timeCard}>
             <Text style={styles.timeLabel}>Notification Time</Text>
-            <TouchableOpacity style={styles.timeButton} onPress={handleTimePress}>
+            <TouchableOpacity
+              style={styles.timeButton}
+              onPress={handleTimePress}
+              accessibilityLabel={`Notification time: ${formatTimeDisplay(notificationTime)}`}
+              accessibilityHint="Opens time picker to select daily reminder time"
+              accessibilityRole="button"
+            >
               <Text style={styles.timeButtonText}>{formatTimeDisplay(notificationTime)}</Text>
             </TouchableOpacity>
           </View>
@@ -105,7 +111,13 @@ export default function TimeSetupScreen() {
                 onChange={handleTimeChange}
                 textColor={Colors.deepCharcoal}
               />
-              <TouchableOpacity style={styles.doneButton} onPress={handleTimeDone}>
+              <TouchableOpacity
+                style={styles.doneButton}
+                onPress={handleTimeDone}
+                accessibilityLabel="Done selecting time"
+                accessibilityHint="Saves the selected notification time"
+                accessibilityRole="button"
+              >
                 <Text style={styles.doneButtonText}>Done</Text>
               </TouchableOpacity>
             </View>
@@ -122,7 +134,13 @@ export default function TimeSetupScreen() {
         </>
       )}
 
-      <TouchableOpacity style={styles.completeButton} onPress={handleComplete}>
+      <TouchableOpacity
+        style={styles.completeButton}
+        onPress={handleComplete}
+        accessibilityLabel={notificationsEnabled ? 'Complete setup' : 'Continue to app'}
+        accessibilityHint="Finishes onboarding and navigates to the main app"
+        accessibilityRole="button"
+      >
         <Text style={styles.completeButtonText}>
           {notificationsEnabled ? 'Complete Setup' : 'Continue to App'}
         </Text>

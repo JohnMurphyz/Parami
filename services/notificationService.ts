@@ -2,14 +2,34 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { getTodayParamiId } from './storageService';
 import { getParamiById } from '../data/paramis';
+import { logger } from '../utils/logger';
 
 // Configure how notifications should be handled when app is in foreground
+// This handler fetches current Parami dynamically to ensure accuracy
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
+  handleNotification: async (notification) => {
+    // Update notification content with current Parami before displaying
+    try {
+      const currentParamiId = await getTodayParamiId();
+      const currentParami = getParamiById(currentParamiId);
+
+      if (currentParami) {
+        // Override notification content with current Parami
+        notification.request.content.title = `Today's Parami: ${currentParami.englishName}`;
+        notification.request.content.body = currentParami.shortDescription;
+        notification.request.content.data = { paramiId: currentParamiId };
+      }
+    } catch (error) {
+      logger.error('Error updating notification content in handler', error);
+    }
+
+    return {
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    };
+  },
 });
 
 /**
@@ -26,7 +46,7 @@ export async function requestNotificationPermissions(): Promise<boolean> {
     }
 
     if (finalStatus !== 'granted') {
-      console.log('Notification permissions not granted');
+      logger.info('Notification permissions not granted');
       return false;
     }
 
@@ -43,7 +63,7 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 
     return true;
   } catch (error) {
-    console.error('Error requesting notification permissions:', error);
+    logger.error('Error requesting notification permissions', error);
     return false;
   }
 }
@@ -56,7 +76,7 @@ export async function scheduleNotification(time: string = '09:00'): Promise<void
     // Request permissions first
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) {
-      console.log('Cannot schedule notification without permission');
+      logger.info('Cannot schedule notification without permission');
       return;
     }
 
@@ -71,7 +91,7 @@ export async function scheduleNotification(time: string = '09:00'): Promise<void
     const parami = getParamiById(todayParamiId);
 
     if (!parami) {
-      console.error('Could not find Parami for notification');
+      logger.error('Could not find Parami for notification');
       return;
     }
 
@@ -90,9 +110,9 @@ export async function scheduleNotification(time: string = '09:00'): Promise<void
       },
     });
 
-    console.log(`Notification scheduled for ${time} daily`);
+    logger.info(`Notification scheduled for ${time} daily`);
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    logger.error('Error scheduling notification', error);
     throw error;
   }
 }
@@ -103,9 +123,9 @@ export async function scheduleNotification(time: string = '09:00'): Promise<void
 export async function cancelAllNotifications(): Promise<void> {
   try {
     await Notifications.cancelAllScheduledNotificationsAsync();
-    console.log('All notifications cancelled');
+    logger.info('All notifications cancelled');
   } catch (error) {
-    console.error('Error cancelling notifications:', error);
+    logger.error('Error cancelling notifications', error);
     throw error;
   }
 }
@@ -117,7 +137,7 @@ export async function getScheduledNotifications(): Promise<Notifications.Notific
   try {
     return await Notifications.getAllScheduledNotificationsAsync();
   } catch (error) {
-    console.error('Error getting scheduled notifications:', error);
+    logger.error('Error getting scheduled notifications', error);
     return [];
   }
 }
@@ -151,15 +171,15 @@ export async function updateNotificationContent(notificationTime: string = '09:0
     const parami = getParamiById(todayParamiId);
 
     if (!parami) {
-      console.error('Could not find Parami for notification update');
+      logger.error('Could not find Parami for notification update');
       return;
     }
 
     // Reschedule notification with updated content
     await scheduleNotification(notificationTime);
 
-    console.log(`Notification content updated for Parami: ${parami.englishName}`);
+    logger.info(`Notification content updated for Parami: ${parami.englishName}`);
   } catch (error) {
-    console.error('Error updating notification content:', error);
+    logger.error('Error updating notification content', error);
   }
 }

@@ -1,4 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
 import { Practice } from '../types';
@@ -6,9 +8,13 @@ import { Practice } from '../types';
 interface PracticeCardProps {
   practice: Practice;
   number: number;
+  isChecked?: boolean;
+  onToggle?: () => void;
+  onShuffle?: () => void;
+  canShuffle?: boolean;
 }
 
-export default function PracticeCard({ practice, number }: PracticeCardProps) {
+const PracticeCard = React.memo(({ practice, number, isChecked = false, onToggle, onShuffle, canShuffle = true }: PracticeCardProps) => {
   const difficultyColors = {
     easy: Colors.deepMoss,
     medium: Colors.saffronGold,
@@ -16,10 +22,24 @@ export default function PracticeCard({ practice, number }: PracticeCardProps) {
   };
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={[
+        styles.card,
+        isChecked && styles.cardChecked
+      ]}
+      onPress={onToggle}
+      activeOpacity={0.7}
+      accessibilityLabel={isChecked ? `${practice.title} - Completed` : practice.title}
+      accessibilityHint={isChecked ? "Double tap to uncheck this practice" : "Double tap to mark this practice as completed"}
+      accessibilityRole="button"
+    >
       <View style={styles.header}>
-        <View style={styles.numberBadge}>
-          <Text style={styles.numberText}>{number}</Text>
+        <View style={[styles.numberBadge, isChecked && styles.numberBadgeChecked]}>
+          {isChecked ? (
+            <Ionicons name="checkmark-circle" size={40} color={Colors.saffronGold} />
+          ) : (
+            <Text style={styles.numberText}>{number}</Text>
+          )}
         </View>
         <View style={styles.metadataContainer}>
           <Text style={[styles.difficulty, { color: difficultyColors[practice.difficulty] }]}>
@@ -27,12 +47,29 @@ export default function PracticeCard({ practice, number }: PracticeCardProps) {
           </Text>
           <Text style={styles.context}>• {practice.context}</Text>
         </View>
+        {onShuffle && !isChecked && canShuffle && (
+          <TouchableOpacity
+            style={styles.shuffleButton}
+            onPress={(e) => {
+              e.stopPropagation();
+              onShuffle();
+            }}
+            activeOpacity={0.6}
+            accessibilityLabel="Shuffle practice"
+            accessibilityHint="Replaces this practice with a different one"
+            accessibilityRole="button"
+          >
+            <Ionicons name="shuffle" size={20} color={Colors.saffronGold} />
+          </TouchableOpacity>
+        )}
       </View>
       <Text style={styles.title}>{practice.title}</Text>
       <Text style={styles.description}>{practice.description}</Text>
-    </View>
+    </TouchableOpacity>
   );
-}
+});
+
+export default PracticeCard;
 
 const styles = StyleSheet.create({
   card: {
@@ -47,6 +84,10 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
+  cardChecked: {
+    backgroundColor: Colors.saffronGold08,
+    opacity: 0.85,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -60,6 +101,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+  },
+  numberBadgeChecked: {
+    backgroundColor: 'transparent',
   },
   numberText: {
     ...Typography.h2,
@@ -91,5 +135,14 @@ const styles = StyleSheet.create({
     ...Typography.body,
     color: Colors.deepStone,
     lineHeight: 22,
+  },
+  shuffleButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.saffronGold08,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
   },
 });

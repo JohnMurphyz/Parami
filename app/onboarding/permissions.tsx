@@ -64,13 +64,22 @@ export default function PermissionsScreen() {
           style={styles.primaryButton}
           onPress={handleEnableNotifications}
           disabled={isRequesting}
+          accessibilityLabel="Enable notifications"
+          accessibilityHint="Requests permission to send daily practice reminders"
+          accessibilityRole="button"
         >
           <Text style={styles.primaryButtonText}>
             {isRequesting ? 'Requesting...' : 'Enable Notifications'}
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.secondaryButton} onPress={handleSkip}>
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={handleSkip}
+          accessibilityLabel="Skip notifications"
+          accessibilityHint="Continues to time setup without enabling notifications"
+          accessibilityRole="button"
+        >
           <Text style={styles.secondaryButtonText}>Skip for Now</Text>
         </TouchableOpacity>
       </View>

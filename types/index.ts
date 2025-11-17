@@ -39,6 +39,7 @@ export interface UserPreferences {
   queuePosition?: number; // Current position in queue
   lastQueueRefreshDate?: string; // ISO date of last daily rotation
   hasCompletedOnboarding?: boolean; // Whether user has completed first-launch onboarding
+  checkedPractices?: Record<number, string[]>; // Checked practice IDs by Parami ID
 }
 
 // Storage keys

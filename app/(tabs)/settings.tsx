@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity, Platform, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { router } from 'expo-router';
 import { loadPreferences, updatePreference } from '../../services/storageService';
 import { scheduleNotification, cancelAllNotifications } from '../../services/notificationService';
 import { Colors } from '../../constants/Colors';
@@ -29,7 +30,12 @@ export default function SettingsScreen() {
       date.setHours(hours, minutes, 0, 0);
       setTempTime(date);
     } catch (error) {
-      console.error('Error loading settings:', error);
+      // Settings will use defaults if loading fails
+      Alert.alert(
+        'Settings Error',
+        'Unable to load saved settings. Using default values.',
+        [{ text: 'OK' }]
+      );
     } finally {
       setLoading(false);
     }
@@ -46,7 +52,13 @@ export default function SettingsScreen() {
         await cancelAllNotifications();
       }
     } catch (error) {
-      console.error('Error toggling notifications:', error);
+      // Revert toggle on failure
+      setNotificationsEnabled(!value);
+      Alert.alert(
+        'Notification Error',
+        'Unable to update notification settings. Please try again.',
+        [{ text: 'OK' }]
+      );
     }
   };
 
@@ -94,6 +106,26 @@ export default function SettingsScreen() {
     return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
+  const handleRestartOnboarding = () => {
+    Alert.alert(
+      'Restart Onboarding',
+      'This will reset the onboarding flow and take you back to the welcome screen. Continue?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Restart',
+          onPress: async () => {
+            await updatePreference('hasCompletedOnboarding', false);
+            router.replace('/onboarding');
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -134,7 +166,13 @@ export default function SettingsScreen() {
                     When to receive your daily reminder
                   </Text>
                 </View>
-                <TouchableOpacity style={styles.timeButton} onPress={handleTimePress}>
+                <TouchableOpacity
+                  style={styles.timeButton}
+                  onPress={handleTimePress}
+                  accessibilityLabel={`Notification time: ${formatTimeDisplay(notificationTime)}`}
+                  accessibilityHint="Opens time picker to change daily notification time"
+                  accessibilityRole="button"
+                >
                   <Text style={styles.timeButtonText}>
                     {formatTimeDisplay(notificationTime)}
                   </Text>
@@ -151,7 +189,13 @@ export default function SettingsScreen() {
                     onChange={handleTimeChange}
                     textColor={Colors.deepCharcoal}
                   />
-                  <TouchableOpacity style={styles.doneButton} onPress={handleTimeDone}>
+                  <TouchableOpacity
+                    style={styles.doneButton}
+                    onPress={handleTimeDone}
+                    accessibilityLabel="Done selecting time"
+                    accessibilityHint="Saves the selected notification time"
+                    accessibilityRole="button"
+                  >
                     <Text style={styles.doneButtonText}>Done</Text>
                   </TouchableOpacity>
                 </View>
@@ -201,6 +245,17 @@ export default function SettingsScreen() {
               {parami}
             </Text>
           ))}
+
+          {/* Test Button for Onboarding */}
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleRestartOnboarding}
+            accessibilityLabel="Restart onboarding"
+            accessibilityHint="Resets the app to show the welcome screen and onboarding flow again"
+            accessibilityRole="button"
+          >
+            <Text style={styles.testButtonText}>Restart Onboarding</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
@@ -322,5 +377,18 @@ const styles = StyleSheet.create({
     ...Typography.body,
     lineHeight: 32,
     paddingLeft: 8,
+  },
+  testButton: {
+    marginTop: 32,
+    backgroundColor: Colors.mediumStone,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  testButtonText: {
+    ...Typography.body,
+    color: Colors.pureWhite,
+    fontWeight: '600',
   },
 });

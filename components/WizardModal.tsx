@@ -62,7 +62,13 @@ export default function WizardModal({ visible, parami, onComplete, onSkip }: Wiz
     >
       <View style={styles.container}>
         {/* Skip Button */}
-        <TouchableOpacity style={styles.skipButton} onPress={onSkip}>
+        <TouchableOpacity
+          style={styles.skipButton}
+          onPress={onSkip}
+          accessibilityLabel="Skip wizard"
+          accessibilityHint="Closes the welcome wizard without creating a custom practice"
+          accessibilityRole="button"
+        >
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
 
@@ -131,6 +137,7 @@ const styles = StyleSheet.create({
   dotActive: {
     backgroundColor: Colors.saffronGold,
     width: 24,
+    height: 8,
   },
   dotInactive: {
     backgroundColor: Colors.softAsh,

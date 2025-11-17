@@ -96,7 +96,13 @@ export default function WizardScreen3({
           </View>
 
           {/* Begin Button */}
-          <TouchableOpacity style={styles.beginButton} onPress={onBegin}>
+          <TouchableOpacity
+            style={styles.beginButton}
+            onPress={onBegin}
+            accessibilityLabel="Begin your day"
+            accessibilityHint="Closes the wizard and saves your custom practice if entered"
+            accessibilityRole="button"
+          >
             <Text style={styles.beginButtonText}>Begin Your Day</Text>
           </TouchableOpacity>
       </ScrollView>

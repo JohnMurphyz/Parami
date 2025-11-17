@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
@@ -11,43 +11,43 @@ export default function WelcomeScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.title}>Welcome to Parami</Text>
+        <Text style={styles.title}>Welcome to Paramis</Text>
         <Text style={styles.subtitle}>
           Daily wisdom and practice for spiritual growth
         </Text>
       </View>
 
-      <View style={styles.infoSection}>
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>What are Param is?</Text>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require('../../assets/wisdom-image.jpeg')}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </View>
+
+      <View style={styles.infoCard}>
+        <View style={styles.cardContent}>
+          <Text style={styles.infoTitle}>Your Daily Practice</Text>
           <Text style={styles.infoText}>
             The 10 Paramis are Buddhist virtues or "perfections" that guide us toward
             wisdom, compassion, and inner peace.
           </Text>
-        </View>
-
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>How it works</Text>
           <Text style={styles.infoText}>
-            Each day, you'll receive a different Parami with:
-          </Text>
-          <Text style={styles.bulletPoint}>• Inspiring quotes and stories</Text>
-          <Text style={styles.bulletPoint}>• Practical suggestions for daily practice</Text>
-          <Text style={styles.bulletPoint}>• Space to create your own practices</Text>
-        </View>
-
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>The Journey</Text>
-          <Text style={styles.infoText}>
-            The app cycles through all 10 Paramis without repetition, ensuring you
-            explore each virtue before any repeats.
+            Each day brings a new Parami with inspiring quotes, stories, and practical
+            suggestions to help you cultivate these qualities in your life.
           </Text>
         </View>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleGetStarted}
+          accessibilityLabel="Get started"
+          accessibilityHint="Begins the onboarding process to set up notifications"
+          accessibilityRole="button"
+        >
+          <Text style={styles.buttonText}>Get Started</Text>
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
-        <Text style={styles.buttonText}>Get Started</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -58,13 +58,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.warmStone,
   },
   content: {
-    paddingHorizontal: 24,
+    flexGrow: 1,
     paddingTop: 80,
-    paddingBottom: 40,
   },
   header: {
-    marginBottom: 48,
+    marginBottom: 40,
     alignItems: 'center',
+    paddingHorizontal: 24,
   },
   title: {
     fontSize: 36,
@@ -78,35 +78,50 @@ const styles = StyleSheet.create({
     color: Colors.mediumStone,
     textAlign: 'center',
   },
-  infoSection: {
-    marginBottom: 32,
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 4,
+    borderColor: Colors.saffronGold,
   },
   infoCard: {
     backgroundColor: Colors.pureWhite,
-    padding: 24,
-    borderRadius: 16,
-    marginBottom: 20,
+    paddingTop: 40,
+    paddingHorizontal: 32,
+    paddingBottom: 48,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    flex: 1,
+    justifyContent: 'space-between',
     shadowColor: Colors.deepCharcoal,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  cardContent: {
+    flex: 1,
+    justifyContent: 'center',
   },
   infoTitle: {
-    ...Typography.h2,
-    color: Colors.deepCharcoal,
-    marginBottom: 12,
+    fontSize: 28,
+    fontWeight: '700',
+    color: Colors.saffronGold,
+    textAlign: 'center',
+    marginBottom: 24,
+    letterSpacing: 0.5,
   },
   infoText: {
-    ...Typography.body,
-    color: Colors.deepStone,
-    lineHeight: 24,
-  },
-  bulletPoint: {
-    ...Typography.body,
+    fontSize: 17,
     color: Colors.deepStone,
     lineHeight: 28,
-    paddingLeft: 8,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   button: {
     backgroundColor: Colors.saffronGold,

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 
 interface ParamiIconProps {
@@ -19,7 +20,7 @@ const PARAMI_IMAGES: Record<number, any> = {
   10: require('../assets/equanimity-image.jpg'),
 };
 
-export default function ParamiIcon({ paramiId, size = 200 }: ParamiIconProps) {
+const ParamiIcon = React.memo(({ paramiId, size = 200 }: ParamiIconProps) => {
   const imageSource = PARAMI_IMAGES[paramiId];
 
   return (
@@ -36,7 +37,9 @@ export default function ParamiIcon({ paramiId, size = 200 }: ParamiIconProps) {
       resizeMode="cover"
     />
   );
-}
+});
+
+export default ParamiIcon;
 
 const styles = StyleSheet.create({
   image: {
