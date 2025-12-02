@@ -6,7 +6,6 @@ import {
   shouldRefreshForNewDay,
 } from '../utils/paramiShuffle';
 import { logger } from '../utils/logger';
-import { getLocalDateString, toLocalDateString } from '../utils/dateUtils';
 
 // Default preferences
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -30,7 +29,7 @@ export async function loadPreferences(): Promise<UserPreferences> {
     await savePreferences(DEFAULT_PREFERENCES);
     return DEFAULT_PREFERENCES;
   } catch (error) {
-    logger.error('Error loading preferences:', error);
+    console.error('Error loading preferences:', error);
     return DEFAULT_PREFERENCES;
   }
 }
@@ -47,7 +46,7 @@ export async function savePreferences(
       JSON.stringify(preferences)
     );
   } catch (error) {
-    logger.error('Error saving preferences:', error);
+    console.error('Error saving preferences:', error);
     throw error;
   }
 }
@@ -64,7 +63,7 @@ export async function updatePreference<K extends keyof UserPreferences>(
     preferences[key] = value;
     await savePreferences(preferences);
   } catch (error) {
-    logger.error('Error updating preference:', error);
+    console.error('Error updating preference:', error);
     throw error;
   }
 }
@@ -82,7 +81,7 @@ export async function updateWizardCompletion(
     preferences.lastViewedParamiId = paramiId;
     await savePreferences(preferences);
   } catch (error) {
-    logger.error('Error updating wizard completion:', error);
+    console.error('Error updating wizard completion:', error);
     throw error;
   }
 }
@@ -93,9 +92,9 @@ export async function updateWizardCompletion(
 export async function shouldShowWizard(currentParamiId: number): Promise<boolean> {
   try {
     const preferences = await loadPreferences();
-    const today = getLocalDateString();
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const lastViewed = preferences.lastViewedDate
-      ? toLocalDateString(preferences.lastViewedDate)
+      ? preferences.lastViewedDate.split('T')[0]
       : null;
 
     // Show wizard if no last viewed date, or if date/Parami has changed
@@ -105,7 +104,7 @@ export async function shouldShowWizard(currentParamiId: number): Promise<boolean
       preferences.lastViewedParamiId !== currentParamiId
     );
   } catch (error) {
-    logger.error('Error checking wizard status:', error);
+    console.error('Error checking wizard status:', error);
     return true; // Show wizard on error to be safe
   }
 }
@@ -125,7 +124,7 @@ export async function saveCustomPractice(
     preferences.customPractices[paramiId] = practice;
     await savePreferences(preferences);
   } catch (error) {
-    logger.error('Error saving custom practice:', error);
+    console.error('Error saving custom practice:', error);
     throw error;
   }
 }
@@ -140,8 +139,20 @@ export async function getCustomPractice(
     const preferences = await loadPreferences();
     return preferences.customPractices?.[paramiId];
   } catch (error) {
-    logger.error('Error getting custom practice:', error);
+    console.error('Error getting custom practice:', error);
     return undefined;
+  }
+}
+
+/**
+ * Clear all stored data (useful for testing/debugging)
+ */
+export async function clearAllData(): Promise<void> {
+  try {
+    await AsyncStorage.clear();
+  } catch (error) {
+    console.error('Error clearing data:', error);
+    throw error;
   }
 }
 
@@ -185,7 +196,7 @@ export async function getTodayParamiId(): Promise<number> {
     const currentIndex = preferences.queuePosition - 1;
     return preferences.paramiQueue[currentIndex];
   } catch (error) {
-    logger.error('Error getting today\'s Parami ID:', error);
+    console.error('Error getting today\'s Parami ID:', error);
     // Fallback to a safe default
     return 1;
   }
@@ -219,7 +230,7 @@ export async function shuffleToNextParami(): Promise<number> {
     await savePreferences(preferences);
     return paramiId;
   } catch (error) {
-    logger.error('Error shuffling to next Parami:', error);
+    console.error('Error shuffling to next Parami:', error);
     throw error;
   }
 }
@@ -232,7 +243,7 @@ export async function getCheckedPractices(paramiId: number): Promise<string[]> {
     const preferences = await loadPreferences();
     return preferences.checkedPractices?.[paramiId] || [];
   } catch (error) {
-    logger.error('Error getting checked practices:', error);
+    console.error('Error getting checked practices:', error);
     return [];
   }
 }
@@ -268,8 +279,26 @@ export async function togglePracticeChecked(
 
     await savePreferences(preferences);
   } catch (error) {
-    logger.error('Error toggling practice checked:', error);
+    console.error('Error toggling practice checked:', error);
     throw error;
   }
 }
 
+/**
+ * Clear all checked practices for a specific Parami
+ */
+export async function clearCheckedPracticesForParami(
+  paramiId: number
+): Promise<void> {
+  try {
+    const preferences = await loadPreferences();
+
+    if (preferences.checkedPractices && preferences.checkedPractices[paramiId]) {
+      delete preferences.checkedPractices[paramiId];
+      await savePreferences(preferences);
+    }
+  } catch (error) {
+    console.error('Error clearing checked practices:', error);
+    throw error;
+  }
+}

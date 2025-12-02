@@ -6,6 +6,7 @@ import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
 import { requestNotificationPermissions } from '../../services/notificationService';
 import { updatePreference } from '../../services/storageService';
+import { logger } from '../../utils/logger';
 
 export default function PermissionsScreen() {
   const [isRequesting, setIsRequesting] = useState(false);
@@ -17,7 +18,7 @@ export default function PermissionsScreen() {
       await updatePreference('notificationsEnabled', hasPermission);
       router.push('/onboarding/time-setup');
     } catch (error) {
-      console.error('Error requesting permissions:', error);
+      logger.error('Error requesting permissions', error);
     } finally {
       setIsRequesting(false);
     }

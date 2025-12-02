@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity, Platform, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { loadPreferences, updatePreference } from '../../services/storageService';
 import { scheduleNotification, cancelAllNotifications } from '../../services/notificationService';
+import { formatTimeDisplay, timeStringToDate } from '../../utils/dateUtils';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
 
@@ -25,10 +26,7 @@ export default function SettingsScreen() {
       setNotificationTime(preferences.notificationTime);
 
       // Convert time string to Date object
-      const [hours, minutes] = preferences.notificationTime.split(':').map(Number);
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      setTempTime(date);
+      setTempTime(timeStringToDate(preferences.notificationTime));
     } catch (error) {
       // Settings will use defaults if loading fails
       Alert.alert(
@@ -66,7 +64,7 @@ export default function SettingsScreen() {
     setShowTimePicker(true);
   };
 
-  const handleTimeChange = (event: any, selectedDate?: Date) => {
+  const handleTimeChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
       setShowTimePicker(false);
     }
@@ -97,13 +95,6 @@ export default function SettingsScreen() {
     if (notificationsEnabled) {
       await scheduleNotification(timeString);
     }
-  };
-
-  const formatTimeDisplay = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12;
-    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
   const handleRestartOnboarding = () => {

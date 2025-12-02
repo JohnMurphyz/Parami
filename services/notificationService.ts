@@ -131,18 +131,6 @@ export async function cancelAllNotifications(): Promise<void> {
 }
 
 /**
- * Get all scheduled notifications (useful for debugging)
- */
-export async function getScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
-  try {
-    return await Notifications.getAllScheduledNotificationsAsync();
-  } catch (error) {
-    logger.error('Error getting scheduled notifications', error);
-    return [];
-  }
-}
-
-/**
  * Add listener for when user taps on a notification
  */
 export function addNotificationResponseListener(

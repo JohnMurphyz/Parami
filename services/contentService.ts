@@ -91,21 +91,3 @@ export function getTotalPracticeCount(paramiId: number): number {
   const expandedPractices = getExpandedPractices(paramiId);
   return parami.practices.length + expandedPractices.length;
 }
-
-/**
- * Get practice progress stats
- *
- * @param paramiId - The ID of the current Parami (1-10)
- * @param dismissedPracticeIds - Array of practice IDs that have been dismissed
- * @returns Object with explored and total counts
- */
-export function getPracticeProgress(
-  paramiId: number,
-  dismissedPracticeIds: string[]
-): { explored: number; total: number; remaining: number } {
-  const total = getTotalPracticeCount(paramiId);
-  const explored = dismissedPracticeIds.length;
-  const remaining = total - explored;
-
-  return { explored, total, remaining };
-}

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Modal, View, FlatList, Dimensions, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { Modal, View, FlatList, Dimensions, StyleSheet, TouchableOpacity, Text, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Parami } from '../types';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
@@ -27,7 +27,7 @@ export default function WizardModal({ visible, parami, onComplete, onSkip }: Wiz
     { id: '3', component: WizardScreen3 },
   ];
 
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const slideIndex = Math.round(event.nativeEvent.contentOffset.x / width);
     setCurrentIndex(slideIndex);
   };

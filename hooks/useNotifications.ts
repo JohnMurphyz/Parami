@@ -7,6 +7,7 @@ import {
   addNotificationReceivedListener,
 } from '../services/notificationService';
 import { loadPreferences } from '../services/storageService';
+import { logger } from '../utils/logger';
 
 /**
  * Hook to set up notification listeners and initialize notifications
@@ -21,11 +22,11 @@ export function useNotifications() {
 
     // Set up notification listeners
     notificationListener.current = addNotificationReceivedListener((notification) => {
-      console.log('Notification received:', notification);
+      logger.debug('Notification received:', notification);
     });
 
     responseListener.current = addNotificationResponseListener((response) => {
-      console.log('Notification tapped:', response);
+      logger.debug('Notification tapped:', response);
       // Could navigate to specific screen here if needed
     });
 
@@ -53,7 +54,7 @@ export function useNotifications() {
         await scheduleNotification(preferences.notificationTime);
       }
     } catch (error) {
-      console.error('Error initializing notifications:', error);
+      logger.error('Error initializing notifications', error);
     }
   }
 }

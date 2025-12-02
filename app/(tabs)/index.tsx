@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, TextInput, Dimensions, NativeScrollEvent, NativeSyntheticEvent, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as StoreReview from 'expo-store-review';
 import { Practice } from '../../types';
@@ -34,7 +34,6 @@ export default function HomeScreen() {
   const [isEditingCustomPractice, setIsEditingCustomPractice] = useState(false);
   const [editedCustomPracticeText, setEditedCustomPracticeText] = useState<string>('');
   const [allPracticesExhausted, setAllPracticesExhausted] = useState(false);
-  const [teachingsSectionIndex, setTeachingsSectionIndex] = useState(0);
   const initializedParamiId = useRef<number | null>(null);
   const cardOpacities = useRef<{[key: string]: Animated.Value}>({});
 
@@ -251,12 +250,6 @@ export default function HomeScreen() {
     setDismissedPracticeIds([]);
     setAllPracticesExhausted(false);
     initializeVisiblePractices();
-  };
-
-  const handleTeachingsScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / Dimensions.get('window').width);
-    setTeachingsSectionIndex(index);
   };
 
   if (!todayParamiId) {

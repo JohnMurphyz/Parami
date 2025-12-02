@@ -2,19 +2,27 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import Constants from 'expo-constants';
 import { useNotifications } from '../hooks/useNotifications';
-import * as Sentry from '@sentry/react-native';
 import ErrorBoundary from '../components/ErrorBoundary';
 
-// Initialize Sentry with DSN from environment variables
-const sentryDsn = Constants.expoConfig?.extra?.sentryDsn;
+// Conditional Sentry import with error handling for React 19 compatibility
+let Sentry: typeof import('@sentry/react-native') | null = null;
 
-if (sentryDsn) {
-  Sentry.init({
-    dsn: sentryDsn,
-    enableInExpoDevelopment: false,
-    debug: false, // Set to true for debugging
-    environment: __DEV__ ? 'development' : 'production',
-  });
+try {
+  Sentry = require('@sentry/react-native');
+
+  // Initialize Sentry with DSN from environment variables (if Sentry loaded successfully)
+  const sentryDsn = Constants.expoConfig?.extra?.sentryDsn;
+
+  if (sentryDsn && Sentry) {
+    Sentry.init({
+      dsn: sentryDsn,
+      enableInExpoDevelopment: false,
+      debug: false,
+      environment: __DEV__ ? 'development' : 'production',
+    });
+  }
+} catch (error) {
+  console.warn('Sentry initialization failed (this is expected with React 19):', error);
 }
 
 export default function RootLayout() {

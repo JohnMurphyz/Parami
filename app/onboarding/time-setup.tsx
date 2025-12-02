@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
 import { updatePreference, loadPreferences } from '../../services/storageService';
 import { scheduleNotification } from '../../services/notificationService';
+import { formatTimeDisplay, timeStringToDate } from '../../utils/dateUtils';
 
 export default function TimeSetupScreen() {
   const [notificationTime, setNotificationTime] = useState('09:00');
@@ -22,13 +23,10 @@ export default function TimeSetupScreen() {
     setNotificationsEnabled(preferences.notificationsEnabled);
     setNotificationTime(preferences.notificationTime);
 
-    const [hours, minutes] = preferences.notificationTime.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-    setTempTime(date);
+    setTempTime(timeStringToDate(preferences.notificationTime));
   };
 
-  const handleTimeChange = (event: any, selectedDate?: Date) => {
+  const handleTimeChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
       setShowTimePicker(false);
     }
@@ -67,13 +65,6 @@ export default function TimeSetupScreen() {
     }
 
     router.replace('/(tabs)');
-  };
-
-  const formatTimeDisplay = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12;
-    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
   return (

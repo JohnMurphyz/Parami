@@ -66,9 +66,4 @@ export const Typography = {
     lineHeight: 30,
     color: Colors.deepCharcoal,
   },
-  practiceNumber: {
-    fontSize: 32,
-    fontWeight: '300' as const,
-    color: Colors.burntSienna,
-  },
 };
