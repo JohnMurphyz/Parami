@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backTitle: {
-    ...Typography.sectionHeading,
+    ...Typography.h2,
     color: Colors.deepCharcoal,
     textAlign: 'center',
     marginBottom: 20,

@@ -117,6 +117,7 @@ export default function SettingsScreen() {
     );
   };
 
+
   if (loading) {
     return (
       <View style={styles.container}>

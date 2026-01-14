@@ -32,6 +32,7 @@ export default function WizardScreen1({
         paramiName={parami.name}
         englishName={parami.englishName}
         shortDescription={parami.shortDescription}
+        fullDescription={parami.fullDescription}
         currentIndex={currentIndex}
         totalCount={totalCount}
       />

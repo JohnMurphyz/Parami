@@ -1,7 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { getTodayParamiId } from './storageService';
-import { getParamiById } from '../data/paramis';
+import { getParamiById } from './firebaseContentService';
 import { logger } from '../utils/logger';
 
 // Configure how notifications should be handled when app is in foreground
@@ -104,6 +104,7 @@ export async function scheduleNotification(time: string = '09:00'): Promise<void
         sound: 'default',
       },
       trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
         hour: hours,
         minute: minutes,
         repeats: true,

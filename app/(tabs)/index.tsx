@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, TextInp
 import { Ionicons } from '@expo/vector-icons';
 import * as StoreReview from 'expo-store-review';
 import { Practice } from '../../types';
-import { getParamiById } from '../../data/paramis';
+import { getParamiById } from '../../services/firebaseContentService';
 import { getAvailablePractices, getNextPractice, hasMorePractices, getTotalPracticeCount } from '../../services/contentService';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
@@ -67,16 +67,19 @@ export default function HomeScreen() {
   };
 
   const checkWizardStatus = async () => {
+    if (todayParamiId === null) return;
     const shouldShow = await shouldShowWizard(todayParamiId);
     setShowWizard(shouldShow);
   };
 
   const loadCustomPractice = async () => {
+    if (todayParamiId === null) return;
     const practice = await getCustomPractice(todayParamiId);
     setCustomPracticeText(practice);
   };
 
   const loadCheckedPractices = useCallback(async () => {
+    if (todayParamiId === null) return;
     const checked = await getCheckedPractices(todayParamiId);
     setCheckedPracticeIds(checked);
   }, [todayParamiId]);
@@ -89,6 +92,7 @@ export default function HomeScreen() {
   };
 
   const initializeVisiblePractices = () => {
+    if (todayParamiId === null) return;
     // Start with just the base 3 practices from the Parami
     const parami = getParamiById(todayParamiId);
     if (parami) {
@@ -101,6 +105,8 @@ export default function HomeScreen() {
   };
 
   const handleDismissPractice = useCallback((practiceId: string) => {
+    if (todayParamiId === null) return;
+
     const opacity = getCardOpacity(practiceId);
 
     // Fade out animation
@@ -116,6 +122,8 @@ export default function HomeScreen() {
       setDismissedPracticeIds(prevDismissed => [...prevDismissed, practiceId]);
 
       setVisiblePractices(prevVisible => {
+        if (todayParamiId === null) return prevVisible;
+
         // Find the index of the card being replaced
         const indexToReplace = prevVisible.findIndex(p => p.id === practiceId);
         if (indexToReplace === -1) return prevVisible;
@@ -161,6 +169,8 @@ export default function HomeScreen() {
   }, [todayParamiId, dismissedPracticeIds]);
 
   const handleTogglePractice = useCallback(async (practiceId: string) => {
+    if (todayParamiId === null) return;
+
     await togglePracticeChecked(todayParamiId, practiceId);
     // Reload checked practices to update UI
     await loadCheckedPractices();
@@ -176,6 +186,8 @@ export default function HomeScreen() {
   }, [todayParamiId, loadCheckedPractices]);
 
   const handleWizardComplete = useCallback(async (customPractice?: string) => {
+    if (todayParamiId === null) return;
+
     if (customPractice) {
       await saveCustomPractice(todayParamiId, customPractice);
       setCustomPracticeText(customPractice);
@@ -185,6 +197,8 @@ export default function HomeScreen() {
   }, [todayParamiId]);
 
   const handleWizardSkip = useCallback(async () => {
+    if (todayParamiId === null) return;
+
     await updateWizardCompletion(todayParamiId);
     setShowWizard(false);
   }, [todayParamiId]);
@@ -221,6 +235,8 @@ export default function HomeScreen() {
   };
 
   const handleSaveCustomPractice = async () => {
+    if (todayParamiId === null) return;
+
     const MAX_PRACTICE_LENGTH = 500;
     const text = editedCustomPracticeText.trim();
 
@@ -411,7 +427,7 @@ export default function HomeScreen() {
                 ...visiblePractices.map(p => p.id),
                 ...dismissedPracticeIds,
               ]));
-              const canStillShuffle = hasMorePractices(todayParamiId, allShownIds);
+              const canStillShuffle = hasMorePractices(todayParamiId!, allShownIds);
 
               return (
                 <Animated.View
@@ -438,7 +454,7 @@ export default function HomeScreen() {
               <View style={styles.exhaustedCard}>
                 <Ionicons name="sparkles" size={32} color={Colors.saffronGold} />
                 <Text style={styles.exhaustedTitle}>
-                  You've explored all {getTotalPracticeCount(todayParamiId)} practices!
+                  You've explored all {getTotalPracticeCount(todayParamiId!)} practices!
                 </Text>
                 <Text style={styles.exhaustedSubtitle}>
                   Amazing dedication to cultivating {parami.englishName}. Come back tomorrow for a new Parami, or reset to explore these practices again.

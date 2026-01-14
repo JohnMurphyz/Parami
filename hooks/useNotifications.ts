@@ -13,8 +13,8 @@ import { logger } from '../utils/logger';
  * Hook to set up notification listeners and initialize notifications
  */
 export function useNotifications() {
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const notificationListener = useRef<ReturnType<typeof addNotificationReceivedListener> | undefined>(undefined);
+  const responseListener = useRef<ReturnType<typeof addNotificationResponseListener> | undefined>(undefined);
 
   useEffect(() => {
     // Initialize notifications
@@ -32,12 +32,8 @@ export function useNotifications() {
 
     // Cleanup
     return () => {
-      if (notificationListener.current) {
-        notificationListener.current.remove();
-      }
-      if (responseListener.current) {
-        responseListener.current.remove();
-      }
+      notificationListener.current?.remove();
+      responseListener.current?.remove();
     };
   }, []);
 

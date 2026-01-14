@@ -89,8 +89,8 @@ You have the right to:
 
 If you have questions or concerns about this Privacy Policy, please contact us at:
 
-**Email**: [YOUR_EMAIL_ADDRESS]
-**Website**: [YOUR_WEBSITE_URL]
+**Email**: whatsajohnmurphy@gmail.com
+**Website**: https://github.com/JohnMurphyz/Parami
 
 ## Consent
 

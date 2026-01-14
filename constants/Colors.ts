@@ -20,6 +20,7 @@ export const Colors = {
 
   // Transparent variations
   saffronGold08: 'rgba(217, 119, 6, 0.08)',
+  saffronGold40: 'rgba(217, 119, 6, 0.4)',
   lotusPink12: 'rgba(232, 155, 155, 0.12)',
   lotusPink40: 'rgba(232, 155, 155, 0.4)',
   deepCharcoal08: 'rgba(43, 37, 32, 0.08)',

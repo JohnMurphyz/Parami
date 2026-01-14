@@ -2,396 +2,381 @@ import { Parami } from '../types';
 
 export const PARAMIS: Parami[] = [
   {
-    id: 1,
-    name: 'Dāna',
-    englishName: 'Generosity',
-    shortDescription: 'The practice of giving freely without expectation of return.',
-    fullDescription:
-      'Dana is the first Parami, representing the practice of generosity and selfless giving. It involves sharing our time, resources, knowledge, and compassion with others without attachment to outcomes or expectation of reward. Dana purifies the heart from greed and teaches us the joy of letting go. Through generosity, we develop abundance mentality and recognize our interconnectedness with all beings.',
-    story:
-      'A wealthy merchant once approached the Buddha, boasting of his charitable donations. "I give gold to temples and feed the poor," he said proudly. The Buddha then pointed to an old woman nearby, who was placing a single grain of rice in the offering bowl. "Her gift is greater than yours," he said. The merchant was confused. The Buddha explained: "You give from your abundance without sacrifice. She gives her only grain, holding nothing back for herself. True generosity is measured not by the amount given, but by what remains in the giver\'s hand." The merchant realized that giving while still clinging creates no freedom. That day, he learned that Dana begins when we release our grip on what we thought we needed.',
-    quote: {
-      id: 'dana-1',
-      text: 'If you knew what I know about the power of giving, you would not let a single meal pass without sharing it in some way.',
-      author: 'Buddha',
-      source: 'Itivuttaka 26',
+    "id": 1,
+    "name": "Dāna",
+    "englishName": "Generosity",
+    "shortDescription": "The practice of giving and opening without expectation of return.",
+    "fullDescription": "Dāna is the willingness to give and open without religious or pious motives, simply doing what is required in any moment. It is learning to trust in your fundamental richness, realizing you do not need to constantly secure your ground. This perfection involves a surrendering process where you give up your psychological 'demand' and the basic criteria of that demand. Generosity is also a form of communication that must transcend irritation and self-defensiveness to be truly open and naked.",
+    "story": "The Buddha once taught his followers to release their 'cows'—the things we think are essential for our existence but are actually obstacles to our happiness. He told a story of a farmer who was distraught because his twelve cows ran away and his crops were eaten by insects. The Buddha noted that he and his monks were happy people because they had no cows to lose, illustrating that true generosity and non-attachment lead to immense freedom.",
+    "quote": {
+      "id": "dana-quote-2",
+      "text": "The gift of Truth excels all other gifts.",
+      "author": "Buddha",
+      "source": "Dhammapada 354"
     },
-    practices: [
+    "practices": [
       {
-        id: 'dana-p1',
-        title: 'Share knowledge freely',
-        description: 'Teach someone a skill or share information that could help them today.',
-        difficulty: 'easy',
-        context: 'work',
+        "id": "dana-practice-1",
+        "title": "Give your true presence",
+        "description": "Breathe mindfully to bring your body and mind together so you can tell a loved one, 'Darling, I am here for you.' This is the greatest gift you can offer.",
+        "difficulty": "easy",
+        "context": "home"
       },
       {
-        id: 'dana-p2',
-        title: 'Give your full attention',
-        description: 'Offer someone your complete, undistracted presence for 15 minutes.',
-        difficulty: 'easy',
-        context: 'relationships',
+        "id": "dana-practice-2",
+        "title": "Offer space",
+        "description": "Recognize that like a flower arrangement, people need space to radiate beauty. Practice giving the people you love more psychological and physical space.",
+        "difficulty": "medium",
+        "context": "relationships"
       },
       {
-        id: 'dana-p3',
-        title: 'Practice anonymous giving',
-        description: 'Do something kind for someone without them knowing it was you.',
-        difficulty: 'medium',
-        context: 'any',
-      },
-    ],
+        "id": "dana-practice-3",
+        "title": "Flower watering",
+        "description": "Practice 'flower watering' by verbally recognizing and praising a positive quality in someone today. This helps their wholesome seeds to grow.",
+        "difficulty": "easy",
+        "context": "any"
+      }
+    ]
   },
   {
-    id: 2,
-    name: 'Sīla',
-    englishName: 'Morality',
-    shortDescription: 'Moral conduct and ethical behavior that creates harmony.',
-    fullDescription:
-      'Sila represents ethical conduct and moral integrity. It is the foundation of Buddhist practice, expressed through mindful speech, action, and livelihood. Sila involves living in alignment with the precepts: not harming, not taking what is not given, wise speech, mindful consumption, and clarity of mind. When we practice Sila, we create conditions for peace and trust in our relationships and communities.',
-    story:
-      'A young monk found a purse filled with gold coins on the forest path. His first thought was of his poor family who could use the wealth. But he remembered his precepts and waited by the path. Hours later, a distraught merchant appeared, searching frantically. The monk returned the purse. Grateful, the merchant offered him half the gold as reward. The monk declined: "If I take payment for doing what is right, then righteousness becomes a transaction. Sila is not practiced for reward—it is the reward itself." The merchant was moved by these words and later became a great supporter of the monastery, but the monk never knew this. He had already received what he sought: the peace of a clear conscience.',
-    quote: {
-      id: 'sila-1',
-      text: 'In all that should be done and left undone, let the wise discern, for they who understand the Dhamma know how to conduct themselves.',
-      author: 'Buddha',
-      source: 'Dhammapada 310',
+    "id": 2,
+    "name": "Sīla",
+    "englishName": "Virtue",
+    "shortDescription": "Living in harmony with the unity of life through ethical conduct.",
+    "fullDescription": "Sīla is not a matter of binding oneself to rigid laws or patterns, but acting according to openness. If a person is completely selfless, they will naturally fall into patterns of correct action without needing premeditated rules. It focuses on Right Speech, Right Action, and Right Livelihood, aiming to promote a happy and harmonious life for both the individual and society. It is the indispensable foundation for all higher spiritual attainments.",
+    "story": "When the Buddha and Ananda found a monk suffering from dysentery who had been neglected by others, they bathed him and cleaned his room. The Buddha then told the other monks, 'If we do not look after each other, who will look after us? When you look after each other, you are looking after the Tathagata'.",
+    "quote": {
+      "id": "shila-quote-1",
+      "text": "By oneself indeed is evil done and by oneself is one defiled... Purity and impurity depend on oneself.",
+      "author": "Buddha",
+      "source": "Dhammapada 165"
     },
-    practices: [
+    "practices": [
       {
-        id: 'sila-p1',
-        title: 'Speak only truth',
-        description: 'Today, commit to speaking only what is true, necessary, and kind.',
-        difficulty: 'medium',
-        context: 'any',
+        "id": "shila-practice-1",
+        "title": "Abstain from gossip",
+        "description": "Practice Right Speech by refraining from talk that may bring about hatred, disunity, or disharmony among others.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'sila-p2',
-        title: 'Honor your commitments',
-        description: 'Follow through on a promise you made, no matter how small.',
-        difficulty: 'easy',
-        context: 'any',
+        "id": "shila-practice-2",
+        "title": "Protect the environment",
+        "description": "Practice Right Action by choosing to live simply and avoiding the exploitation of nature and other living beings.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'sila-p3',
-        title: 'Ethical consumption',
-        description: 'Make one purchasing decision based on ethical considerations rather than convenience.',
-        difficulty: 'medium',
-        context: 'personal',
-      },
-    ],
+        "id": "shila-practice-3",
+        "title": "Mindful consumption",
+        "description": "Observe the Fifth Mindfulness Training by consuming only items that preserve peace and well-being in your body and mind.",
+        "difficulty": "medium",
+        "context": "any"
+      }
+    ]
   },
   {
-    id: 3,
-    name: 'Nekkhamma',
-    englishName: 'Renunciation',
-    shortDescription: 'Letting go of attachments that bind us to suffering.',
-    fullDescription:
-      'Nekkhamma is the practice of renunciation and non-attachment. It does not mean rejecting the world, but rather releasing our clinging to experiences, possessions, and outcomes. Nekkhamma brings freedom from the endless cycle of wanting and aversion. By simplifying our lives and releasing what we do not need, we discover contentment and peace. This practice teaches us that true happiness comes not from accumulation but from letting go.',
-    story:
-      'A successful executive left her career to study meditation at a monastery. Her friends thought she was crazy to abandon everything she had worked for. In the monastery, she lived with one robe, one bowl, and a sleeping mat. One night, thieves broke in and stole her bowl—her only possession. She laughed when she discovered the theft. "Poor thieves," she thought. "They came all this way for a clay bowl I would have gladly given them." In that moment, she understood: she had spent decades accumulating things she feared to lose, and the fear had imprisoned her. Now, with nothing left to protect, she was finally free. True wealth, she realized, isn\'t what we can hold—it\'s the lightness of having nothing to defend.',
-    quote: {
-      id: 'nekkhamma-1',
-      text: 'Let go of the past, let go of the future, let go of the present. Crossing to the farther shore of existence, with mind released from everything, do not again undergo birth and decay.',
-      author: 'Buddha',
-      source: 'Dhammapada 348',
+    "id": 3,
+    "name": "Nekkhamma",
+    "englishName": "Renunciation",
+    "shortDescription": "The freedom found in letting go of craving and worldly attachments.",
+    "fullDescription": "Renunciation is not an escape from life, but a way to relate to reality without being enslaved by the 'horse' of habit energy. It involves seeing that worldly pleasures are like a 'borrowed fancy carriage'—eventually, the owners (time and change) will take them back, leaving the un-renounced person dejected. True renunciation is 'swimming against the current' of race-old urges and self-centered conditioning to find an island where there is no clinging. It is the practice of emptying your boat so that it can travel faster toward liberation.",
+    "story": "At age 29, Prince Siddhartha looked upon his sleeping wife and son one last time and slipped away in the dark hours before dawn. He traded his royal robes for the saffron rags of a convict to signify that he was no longer a captive of his own palace but a seeker of the unconditioned.",
+    "quote": {
+      "id": "nekkhamma-quote-1",
+      "text": "Choose the path that leads to nirvana; avoid the road to profit and pleasure.",
+      "author": "Buddha",
+      "source": "Dhammapada 75"
     },
-    practices: [
+    "practices": [
       {
-        id: 'nekkhamma-p1',
-        title: 'Digital simplification',
-        description: 'Delete one app or unsubscribe from one service you no longer truly need.',
-        difficulty: 'easy',
-        context: 'personal',
+        "id": "nekkhamma-practice-1",
+        "title": "Identify your 'cows'",
+        "description": "Identify one thing you think you 'must' have to be happy (a 'cow'). Practice going without it for 24 hours to realize you can be happy without owning it.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'nekkhamma-p2',
-        title: 'Release a grudge',
-        description: 'Let go of resentment toward someone, even if just in your own heart.',
-        difficulty: 'challenging',
-        context: 'relationships',
+        "id": "nekkhamma-practice-2",
+        "title": "Empty your boat",
+        "description": "Cast out the heavy burdens of greed and hatred that weigh down your life. Let go of one possession or grudge today.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'nekkhamma-p3',
-        title: 'Practice non-attachment to outcomes',
-        description: 'Do your best on a task, then consciously release attachment to how it turns out.',
-        difficulty: 'medium',
-        context: 'work',
-      },
-    ],
+        "id": "nekkhamma-practice-3",
+        "title": "Release spiritual materialism",
+        "description": "Abandon the tendency to collect spiritual paths or knowledge to build up your pride. Practice the teachings simply, without ego.",
+        "difficulty": "challenging",
+        "context": "personal"
+      }
+    ]
   },
   {
-    id: 4,
-    name: 'Paññā',
-    englishName: 'Wisdom',
-    shortDescription: 'Clear seeing and discernment of the true nature of reality.',
-    fullDescription:
-      'Panna is transcendent wisdom that sees beyond surface appearances to understand the true nature of existence. It encompasses understanding the Four Noble Truths, recognizing impermanence, seeing the interconnectedness of all things, and discerning wholesome from unwholesome actions. Panna develops through study, reflection, and meditative insight. With wisdom, we make skillful choices and respond to life with clarity rather than reactivity.',
-    story:
-      'Two travelers came upon a village where everyone was arguing about whether the wind or the flag was moving. One group insisted the wind moved, causing the flag to flutter. The other group said the flag moved on its own, disturbing the air. The debate grew heated. An elder monk passed by and listened quietly. When asked his opinion, he said simply: "Neither the wind nor the flag is moving. Your minds are moving." The travelers were struck silent. They realized they had been so focused on being right that they missed the deeper truth: all movement arises from perception, and perception arises from mind. That day, they learned that Panna is not about winning arguments—it\'s about seeing clearly beyond our need to be right.',
-    quote: {
-      id: 'panna-1',
-      text: 'As a solid rock is not shaken by the wind, even so the wise are not ruffled by praise or blame.',
-      author: 'Buddha',
-      source: 'Dhammapada 81',
+    "id": 4,
+    "name": "Paññā",
+    "englishName": "Wisdom",
+    "shortDescription": "The ability to see through concepts and perceive things as they truly are.",
+    "fullDescription": "Paññā is the 'all-seeing eye' and a sharp sword that cuts through all concepts. It is the ability to see situations as they are, without the interference of the ego's 'watcher'. It transforms primitive preconceptions and allows one to see the interdependent and impermanent nature of all phenomena. True wisdom means being 'suspended nowhere,' not distinguishing between 'this' and 'that'.",
+    "story": "The Buddha told of a king who gathered blind men to touch an elephant. One touched the trunk and said an elephant is like a plow pole; another touched the ear and said it is like a winnowing basket. They fought because they each clung to a partial view. Wisdom is the panoramic view from above that sees the whole elephant.",
+    "quote": {
+      "id": "prajna-quote-1",
+      "text": "The light of wisdom is supreme.",
+      "author": "Buddha",
+      "source": "Anguttara Nikaya 4:143"
     },
-    practices: [
+    "practices": [
       {
-        id: 'panna-p1',
-        title: 'Question your assumptions',
-        description: 'Identify one strongly-held belief and examine it from multiple perspectives.',
-        difficulty: 'medium',
-        context: 'personal',
+        "id": "prajna-practice-1",
+        "title": "Are you sure?",
+        "description": "Write 'Are you sure?' on a piece of paper and keep it visible. Ask this of your perceptions several times today to avoid falling into wrong views.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'panna-p2',
-        title: 'Observe impermanence',
-        description: 'Notice three things today that have changed since yesterday.',
-        difficulty: 'easy',
-        context: 'any',
+        "id": "prajna-practice-2",
+        "title": "The Flower and the Universe",
+        "description": "Look at a flower and try to see the 'non-flower elements' in it: the sunshine, the clouds, the soil, and the gardener. Realize it cannot exist by itself alone.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'panna-p3',
-        title: 'Learn from difficulty',
-        description: 'When facing a challenge, ask "What is this teaching me?" instead of "Why me?"',
-        difficulty: 'medium',
-        context: 'any',
-      },
-    ],
+        "id": "prajna-practice-3",
+        "title": "Contemplate impermanence",
+        "description": "Reflect on how everything is in a state of flux. Notice the changing nature of your thoughts, feelings, and the world around you.",
+        "difficulty": "medium",
+        "context": "personal"
+      }
+    ]
   },
   {
-    id: 5,
-    name: 'Viriya',
-    englishName: 'Energy',
-    shortDescription: 'Sustained effort and diligent persistence on the spiritual path.',
-    fullDescription:
-      'Viriya represents enthusiastic perseverance and right effort. It is the energy required to cultivate wholesome states and abandon unwholesome ones. Viriya is not harsh striving, but balanced, joyful effort sustained over time. Like a warrior who never gives up, we apply persistent energy to our practice, continually returning to mindfulness, compassion, and wisdom even when difficult. This steady dedication transforms our lives.',
-    story:
-      'A student came to her meditation teacher, frustrated. "I\'ve been practicing for months, but I still get distracted constantly. I\'m ready to quit." The teacher smiled and took her to the garden, where water dripped slowly onto a stone. "See this groove?" she said, pointing to a small indentation. "This stone has sat here for 20 years. The water doesn\'t force its way through—it just keeps showing up, one drop at a time. Your practice is the same. You don\'t fail when your mind wanders; you succeed each time you gently return." The student looked at the stone, understanding dawning. Transformation isn\'t about dramatic breakthroughs—it\'s about showing up with gentle persistence, day after day, breath after breath.',
-    quote: {
-      id: 'viriya-1',
-      text: 'There is no fire like passion, no crime like hatred, no sorrow like separation, no sickness like hunger of heart, and no joy like the joy of freedom. Health, contentment and trust are your greatest possessions, and freedom your greatest joy.',
-      author: 'Buddha',
-      source: 'Dhammapada 202-204',
+    "id": 5,
+    "name": "Viriya",
+    "englishName": "Energy",
+    "shortDescription": "Joyous energy that leads us into situations without missing opportunities.",
+    "fullDescription": "Viriya is energy born of joy and intense interest in the creative patterns of life. It is not the kind of energy used to work hard because one feels they 'must,' but rather a quality of delight in involvement. It involves the 'Fourfold Right Diligence': preventing unwholesome seeds from arising, helping those that have arisen to subside, and helping wholesome seeds to arise and grow. It is the energy that makes one truly alive, with shining eyes and solid steps.",
+    "story": "The Buddha once asked the monk Sona, a former musician, what happens if the strings of his vina are too tight or too loose. Sona replied that they either break or produce no sound. The Buddha taught that Right Diligence is the same: one must maintain health and joy without forcing oneself beyond their limits.",
+    "quote": {
+      "id": "virya-quote-1",
+      "text": "The wise man protects his diligence as a supreme treasure.",
+      "author": "Buddha",
+      "source": "Dhammapada 26"
     },
-    practices: [
+    "practices": [
       {
-        id: 'viriya-p1',
-        title: 'Consistent meditation',
-        description: 'Sit in meditation for at least 5 minutes, even if you don\'t feel like it.',
-        difficulty: 'easy',
-        context: 'personal',
+        "id": "virya-practice-1",
+        "title": "Selective Watering",
+        "description": "Identify a positive quality (seed) in yourself or a loved one and find a way to 'water' it through praise or attention today.",
+        "difficulty": "easy",
+        "context": "any"
       },
       {
-        id: 'viriya-p2',
-        title: 'Complete an unfinished task',
-        description: 'Finish one small task you\'ve been procrastinating on.',
-        difficulty: 'medium',
-        context: 'any',
+        "id": "virya-practice-2",
+        "title": "Changing the Peg",
+        "description": "When an unwholesome thought arises, replace it with a wholesome one, just as a carpenter replaces a rotten peg by driving in a new one.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'viriya-p3',
-        title: 'Maintain a healthy habit',
-        description: 'Even when tired, follow through on one health-supporting practice (exercise, healthy eating, sleep).',
-        difficulty: 'medium',
-        context: 'personal',
-      },
-    ],
+        "id": "virya-practice-3",
+        "title": "Prevent unwholesome seeds",
+        "description": "Be mindful throughout the day to prevent unwholesome seeds like anger, jealousy, or greed from arising in your mind consciousness.",
+        "difficulty": "medium",
+        "context": "personal"
+      }
+    ]
   },
   {
-    id: 6,
-    name: 'Khanti',
-    englishName: 'Patience',
-    shortDescription: 'Enduring difficulty with grace and equanimity.',
-    fullDescription:
-      'Khanti is patience and forbearance in the face of difficulty, insult, or hardship. It means bearing discomfort without becoming reactive or losing our inner peace. Khanti is not passive resignation but an active choice to meet challenges with acceptance and grace. By developing patience, we cultivate emotional resilience and the ability to remain centered when life does not go according to our wishes.',
-    story:
-      'A master calligrapher was creating a piece for the emperor when her young apprentice accidentally knocked over an ink bottle, ruining weeks of work. The room fell silent, everyone waiting for her anger. Instead, she studied the black stain spreading across the silk. Then she smiled, picked up her brush, and began incorporating the spill into the design. What emerged was even more beautiful than the original—a landscape where the accidental ink became a dramatic night sky. Later, her apprentice asked how she remained calm. She replied: "Anger would not un-spill the ink. Patience allowed me to see what the moment offered instead of mourning what it took. Every setback is an invitation to create something new from what remains."',
-    quote: {
-      id: 'khanti-1',
-      text: 'Patience is the highest austerity. Forbearance is the supreme practice.',
-      author: 'Buddha',
-      source: 'Dhammapada 184',
+    "id": 6,
+    "name": "Khanti",
+    "englishName": "Patience",
+    "shortDescription": "The capacity to receive, embrace, and transform pain without fighting it.",
+    "fullDescription": "Khanti is the 'soft and noble heart' that allows for a communication process that is warm and penetrable. It is not merely about trying to be a hard worker or a forebearing person, but about having no expectation or impatience. It requires an awareness of the 'space' between oneself and a situation, ensuring one is never shocked or disturbed by destructive or chaotic events. True inclusiveness means your heart is as large as a river, capable of receiving a handful of salt without becoming undrinkable.",
+    "story": "Shariputra once delivered a 'Lion's Roar' of inclusiveness when falsely accused of being rude to a fellow monk. He explained that he practiced to be like the earth, which receives both fragrant flowers and foul excrement equally, without grasping or aversion, using its power to receive, embrace, and transform all things.",
+    "quote": {
+      "id": "kshanti-quote-1",
+      "text": "Hatred is never appeased by hatred in this world; it is appeased by love. This is an eternal Law.",
+      "author": "Buddha",
+      "source": "Dhammapada 5"
     },
-    practices: [
+    "practices": [
       {
-        id: 'khanti-p1',
-        title: 'Wait without irritation',
-        description: 'When delayed (in traffic, in line, waiting for response), practice staying calm and present.',
-        difficulty: 'easy',
-        context: 'any',
+        "id": "kshanti-practice-1",
+        "title": "Identify the 'second arrow'",
+        "description": "When you experience physical or emotional pain, recognize it as the first arrow. Avoid the 'second arrow'—the fear, hatred, or anger that amplifies the initial pain.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'khanti-p2',
-        title: 'Respond instead of react',
-        description: 'When someone frustrates you, pause for three breaths before responding.',
-        difficulty: 'medium',
-        context: 'relationships',
+        "id": "kshanti-practice-2",
+        "title": "The Gift of Reconciliation",
+        "description": "If you are angry at someone, prepare a small gift for them. When you feel ready, offer it to them to break the cycle of suffering.",
+        "difficulty": "challenging",
+        "context": "relationships"
       },
       {
-        id: 'khanti-p3',
-        title: 'Accept discomfort',
-        description: 'When experiencing physical or emotional discomfort, practice being with it rather than immediately trying to fix it.',
-        difficulty: 'challenging',
-        context: 'personal',
-      },
-    ],
+        "id": "kshanti-practice-3",
+        "title": "Be like the Earth",
+        "description": "Practice receiving all experiences—both pleasant and unpleasant—like the earth receives fragrant flowers and foul waste without aversion or grasping.",
+        "difficulty": "challenging",
+        "context": "any"
+      }
+    ]
   },
   {
-    id: 7,
-    name: 'Sacca',
-    englishName: 'Truthfulness',
-    shortDescription: 'Commitment to truth in speech and authentic being.',
-    fullDescription:
-      'Sacca represents truthfulness and integrity in both speech and action. It means being honest with ourselves and others, keeping our word, and living authentically. Sacca involves speaking truth that is both honest and beneficial, avoiding lies, exaggerations, and deceptions. When we practice Sacca, we become trustworthy and reliable, and we develop inner confidence that comes from alignment between our values and our actions.',
-    story:
-      'A court advisor was known for always speaking truth, even when difficult. One day, the king asked him: "Do you think I am wise?" The court grew tense—saying "no" could mean death, but lying would violate his principles. The advisor paused, then said: "Your Majesty, wisdom is not something we possess but something we practice in each moment. I have seen you make wise choices and unwise ones, as we all do. What makes you truly wise is not perfection, but your willingness to ask the question." The king sat quietly, then smiled. "Your truth serves me better than flattery ever could. It gives me the chance to become the king I wish to be." The advisor learned that Sacca is not about harsh judgments—it\'s about offering truth wrapped in compassion.',
-    quote: {
-      id: 'sacca-1',
-      text: 'Better than a thousand hollow words is one word that brings peace.',
-      author: 'Buddha',
-      source: 'Dhammapada 100',
+    "id": 7,
+    "name": "Sacca",
+    "englishName": "Truthfulness",
+    "shortDescription": "Loyalty to the truth in thought, word, and deed.",
+    "fullDescription": "Truthfulness is the foundation of honesty and integrity (Ajjava). It requires not only abstaining from lies and exaggerations but also speaking in a way that is beneficial and timely. A wise person who protects the truth states their beliefs as 'this is my faith' without falling into the dogmatic trap of saying 'only this is true and everything else is false'. Words are powerful weapons; truthfulness ensures they are used to heal and reconcile rather than to divide or destroy.",
+    "story": "When the Buddha returned to his home city, his father King Shuddhodana was angry that his son had become a beggar. The Buddha truthfully replied that he was not a king of a small territory through power, but a ruler of the whole world through love, having brought a treasure (the Dharma) that no other son could provide.",
+    "quote": {
+      "id": "sacca-quote-1",
+      "text": "One who transgresses the central law of life, who speaks falsely... is capable of any evil.",
+      "author": "Buddha",
+      "source": "Dhammapada 176"
     },
-    practices: [
+    "practices": [
       {
-        id: 'sacca-p1',
-        title: 'Honest self-reflection',
-        description: 'Acknowledge one truth about yourself that you usually avoid or deny.',
-        difficulty: 'medium',
-        context: 'personal',
+        "id": "sacca-practice-1",
+        "title": "The 'Are you sure?' test",
+        "description": "Before speaking or acting on a perception, ask yourself 'Am I sure?'. This prevents you from projecting your own biases as absolute truths.",
+        "difficulty": "easy",
+        "context": "any"
       },
       {
-        id: 'sacca-p2',
-        title: 'Keep a small promise',
-        description: 'Make a commitment to yourself or another, and follow through completely.',
-        difficulty: 'easy',
-        context: 'any',
+        "id": "sacca-practice-2",
+        "title": "Noble Silence",
+        "description": "If what you are about to say is true but not useful or kind, practice 'thundering silence'.",
+        "difficulty": "medium",
+        "context": "any"
       },
       {
-        id: 'sacca-p3',
-        title: 'Speak your authentic truth',
-        description: 'Share your genuine feelings or opinion in a situation where you might usually stay silent.',
-        difficulty: 'challenging',
-        context: 'relationships',
-      },
-    ],
+        "id": "sacca-practice-3",
+        "title": "Call things by their true names",
+        "description": "Speak truthfully by naming your emotions and experiences accurately (e.g., 'depression,' 'anger') without minimizing or exaggerating.",
+        "difficulty": "easy",
+        "context": "any"
+      }
+    ]
   },
   {
-    id: 8,
-    name: 'Adhiṭṭhāna',
-    englishName: 'Determination',
-    shortDescription: 'Unwavering resolve and firm commitment to our path.',
-    fullDescription:
-      'Adhitthana is the quality of determination and strong resolution. It represents the unshakeable commitment to follow through on our intentions and vows, regardless of obstacles. Adhitthana is the inner strength that keeps us on our path when enthusiasm wanes or difficulties arise. By cultivating determination, we develop the fortitude to maintain our practice through all circumstances and honor the commitments we make to ourselves and others.',
-    story:
-      'A young athlete trained for years to make the national team, sacrificing comforts and social life. The day before the final trial, she injured her knee severely. Doctors said she needed surgery and months of recovery. She could have accepted defeat, but she remembered her teacher\'s words: "Adhitthana is tested not when the path is clear, but when every reason to quit seems reasonable." Despite the pain, she completed the trial, not placing first, but honoring her commitment to herself. Years later, she became a coach. Her most important lesson was not about winning, but about the strength found in keeping promises to ourselves when no one is watching—because that\'s when determination matters most.',
-    quote: {
-      id: 'adhitthana-1',
-      text: 'An idea that is developed and put into action is more important than an idea that exists only as an idea.',
-      author: 'Buddha',
+    "id": 8,
+    "name": "Adhiṭṭhāna",
+    "englishName": "Determination",
+    "shortDescription": "Unwavering determination to follow the path regardless of obstacles.",
+    "fullDescription": "Determination is the energy of a 'brave warrior' who trusts in their potential to complete the spiritual journey. It is a one-pointedness of mind that prevents one from being blown from side to side by the storms of emotion. This perfection requires 'unflinching determination' and a focus on 'nowness'—working with the present state of mind rather than dreaming of future attainments. It is the bridge that carries us through disappointment and failure until the goal is won.",
+    "story": "Near the city of Gaya, Siddhartha seated himself beneath a tree and made a solemn vow: 'Come what may—let my body rot, let my bones be reduced to ashes—I will not get up from here until I have found the way'. Despite the attacks of Mara's armies, he sat like a mountain unshaken by an earthquake until dawn.",
+    "quote": {
+      "id": "adhitthana-quote-1",
+      "text": "Guard your mind against negative thoughts. Pull yourself out of bad ways as an elephant raises itself out of the mud.",
+      "author": "Buddha",
+      "source": "Dhammapada 327"
     },
-    practices: [
+    "practices": [
       {
-        id: 'adhitthana-p1',
-        title: 'Set a clear intention',
-        description: 'Choose one specific intention for today and write it down.',
-        difficulty: 'easy',
-        context: 'personal',
+        "id": "adhitthana-practice-1",
+        "title": "Just Sitting",
+        "description": "Commit to sitting for 10 minutes without moving or yielding to the urge to scratch or shift. Observe the impulses but do not act on them.",
+        "difficulty": "challenging",
+        "context": "home"
       },
       {
-        id: 'adhitthana-p2',
-        title: 'Honor your word',
-        description: 'When you say you will do something today, ensure you follow through no matter what.',
-        difficulty: 'medium',
-        context: 'any',
+        "id": "adhitthana-practice-2",
+        "title": "Make your mind a fortress",
+        "description": "Resolve to protect your mind from negative thoughts and influences. Conquer doubt and distraction with wisdom.",
+        "difficulty": "medium",
+        "context": "personal"
       },
       {
-        id: 'adhitthana-p3',
-        title: 'Continue when discouraged',
-        description: 'Identify one goal you\'ve been losing motivation for, and take one action toward it anyway.',
-        difficulty: 'challenging',
-        context: 'any',
-      },
-    ],
+        "id": "adhitthana-practice-3",
+        "title": "Commit to the present",
+        "description": "Fix your practice on 'nowness'—work with your present state of mind rather than dreaming of future spiritual attainments.",
+        "difficulty": "medium",
+        "context": "any"
+      }
+    ]
   },
   {
-    id: 9,
-    name: 'Mettā',
-    englishName: 'Loving-kindness',
-    shortDescription: 'Universal goodwill and compassion toward all beings.',
-    fullDescription:
-      'Metta is loving-kindness, the wish for the happiness and wellbeing of all beings without exception. It is an active love that seeks the welfare of others and responds to all situations with benevolence and compassion. Metta begins with kindness toward ourselves and extends outward to loved ones, neutral people, difficult people, and ultimately all living beings. This boundless love transforms our relationships and dissolves the barriers between ourselves and others.',
-    story:
-      'A village healer was renowned for treating everyone with equal kindness—the wealthy merchant and the beggar, the kind neighbor and the thief who once robbed her. When asked how she could treat her robber with such care, she explained: "I see each person as a child who has forgotten their true nature. Some remember it more easily than others, but all suffer when they forget. My kindness is not a reward for good behavior—it\'s a reminder of who they really are beneath their confusion." Years later, that thief became her most dedicated student, but not because she demanded change. Her unconditional metta was the mirror that showed him what he could become.',
-    quote: {
-      id: 'metta-1',
-      text: 'Hatred does not cease by hatred, but only by love; this is the eternal rule.',
-      author: 'Buddha',
-      source: 'Dhammapada 5',
+    "id": 9,
+    "name": "Mettā",
+    "englishName": "Loving-kindness",
+    "shortDescription": "The capacity to offer joy and friendship to all beings without discrimination.",
+    "fullDescription": "Mettā is the intention to offer joy and happiness. It is not a sentimental feeling but a 'limitless heart' that pervades the world like a mother's love for her only child. True loving-kindness is unconditional; it does not expect anything in return and does not exclude those who have done us harm. It is the practice of 'selective watering'—refusing to water seeds of anger and instead watering the seeds of joy in ourselves and others.",
+    "story": "The Buddha taught that hatred is never appeased by hatred, but by love alone. He illustrated this through the 'Simile of the Saw,' saying that even if bandits were to saw off your limbs, if you gave rise to a mind of hate toward them, you would not be carrying out his teaching.",
+    "quote": {
+      "id": "metta-quote-1",
+      "text": "The disciples of Gautama are wide awake and vigilant, rejoicing in compassion day and night.",
+      "author": "Buddha",
+      "source": "Dhammapada 300"
     },
-    practices: [
+    "practices": [
       {
-        id: 'metta-p1',
-        title: 'Metta meditation',
-        description: 'Spend 5 minutes sending loving wishes: "May I/you be happy, may I/you be healthy, may I/you be safe, may I/you live with ease."',
-        difficulty: 'easy',
-        context: 'personal',
+        "id": "metta-practice-1",
+        "title": "Flower Watering",
+        "description": "Practice 'flower watering' by verbally recognizing and praising a positive quality in someone today. This helps their wholesome seeds to grow.",
+        "difficulty": "easy",
+        "context": "any"
       },
       {
-        id: 'metta-p2',
-        title: 'Act of kindness',
-        description: 'Do something kind for someone, expecting nothing in return.',
-        difficulty: 'easy',
-        context: 'any',
+        "id": "metta-practice-2",
+        "title": "The First Ray",
+        "description": "Upon waking, smile and vow: 'I vow to live fully in each moment and to look at all beings with eyes of compassion'.",
+        "difficulty": "easy",
+        "context": "any"
       },
       {
-        id: 'metta-p3',
-        title: 'Loving-kindness for the difficult',
-        description: 'Send genuine wishes of wellbeing to someone you find challenging.',
-        difficulty: 'challenging',
-        context: 'relationships',
-      },
-    ],
+        "id": "metta-practice-3",
+        "title": "Love like a mother",
+        "description": "Love the world as a mother loves her only child—with boundless, protective, unconditional care that does not discriminate.",
+        "difficulty": "medium",
+        "context": "any"
+      }
+    ]
   },
   {
-    id: 10,
-    name: 'Upekkhā',
-    englishName: 'Equanimity',
-    shortDescription: 'Mental balance and even-mindedness in all circumstances.',
-    fullDescription:
-      'Upekkha is equanimity, the quality of mental balance and imperturbability. It is the ability to maintain inner peace and clear observation regardless of whether experiences are pleasant or unpleasant. Upekkha is not indifference or detachment from caring, but rather a balanced perspective that sees the bigger picture. With equanimity, we remain steady through life\'s ups and downs, responding with wisdom rather than being swept away by circumstances.',
-    story:
-      'A farmer\'s horse ran away. His neighbors said, "What terrible luck!" He replied, "Maybe." The next day, the horse returned with three wild horses. "What wonderful luck!" they exclaimed. He said, "Maybe." His son tried to tame one horse and broke his leg. "How awful!" they cried. "Maybe," he said. Then war came, and all young men were drafted—except his son, whose broken leg made him ineligible. "Such fortune!" they celebrated. Again, he simply said, "Maybe." His neighbors finally asked, "How can you be so unmoved by everything?" He smiled: "Life will rise and fall like waves. I cannot control the ocean, but I can learn to sail without capsizing at every change of wind. This is Upekkha—not caring less, but understanding more."',
-    quote: {
-      id: 'upekkha-1',
-      text: 'In the confrontation between the stream and the rock, the stream always wins, not through strength but by perseverance.',
-      author: 'Buddha',
+    "id": 10,
+    "name": "Upekkhā",
+    "englishName": "Equanimity",
+    "shortDescription": "Stability of mind that is not shaken by the ups and downs of life.",
+    "fullDescription": "Equanimity is the 'wisdom of equality' that removes the boundaries between self and other. It allows a person to face life's eight worldly conditions—gain and loss, fame and disrepute, praise and blame, pleasure and pain—without being elated or dejected. It is like a solid rock that cannot be moved by the wind. Equanimity is not indifference; it is a state of being master of the situation, allowing life to flow around and through you without leaving a knot of attachment.",
+    "story": "The Buddha described the wise as being like a flame that burns through the night: the flame is not the same from moment to moment, yet it continues without being a 'permanent' thing. By realizing that we are like waves that are actually water, we lose the fear of rising and falling, which is the heart of equanimity.",
+    "quote": {
+      "id": "upekkha-quote-1",
+      "text": "The victor breeds hatred, and the defeated lies down in misery. He who renounces both victory and defeat is happy and peaceful.",
+      "author": "Buddha",
+      "source": "Dhammapada 201"
     },
-    practices: [
+    "practices": [
       {
-        id: 'upekkha-p1',
-        title: 'Observe without judgment',
-        description: 'Notice your experiences today as simply "pleasant," "unpleasant," or "neutral" without adding stories.',
-        difficulty: 'medium',
-        context: 'personal',
+        "id": "upekkha-practice-1",
+        "title": "The Mirror Practice",
+        "description": "Visualize your 'enemy' and practice seeing them as another version of yourself, sharing the same human desire for happiness and fear of pain.",
+        "difficulty": "challenging",
+        "context": "any"
       },
       {
-        id: 'upekkha-p2',
-        title: 'Accept what you cannot change',
-        description: 'Identify one situation beyond your control and practice acceptance of it.',
-        difficulty: 'medium',
-        context: 'any',
+        "id": "upekkha-practice-2",
+        "title": "Practice letting be",
+        "description": "Feel energy patterns in your body and mind without trying to subdue, change, or control them. Simply observe with non-attachment.",
+        "difficulty": "medium",
+        "context": "personal"
       },
       {
-        id: 'upekkha-p3',
-        title: 'Balanced response to news',
-        description: 'Whether you receive good or bad news today, notice your reaction and return to inner balance.',
-        difficulty: 'challenging',
-        context: 'any',
-      },
-    ],
-  },
+        "id": "upekkha-practice-3",
+        "title": "Face the eight conditions",
+        "description": "When you experience gain or loss, praise or blame, pleasure or pain today, maintain a rock-like stability of mind.",
+        "difficulty": "challenging",
+        "context": "any"
+      }
+    ]
+  }
 ];
 
-// Helper function to get Parami by ID
-export const getParamiById = (id: number): Parami | undefined => {
-  return PARAMIS.find((parami) => parami.id === id);
-};
+export function getParamiById(id: number): Parami | undefined {
+  return PARAMIS.find(p => p.id === id);
+}
+
+export function getAllParamis(): Parami[] {
+  return PARAMIS;
+}

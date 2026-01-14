@@ -1,8 +1,11 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import Constants from 'expo-constants';
 import { useNotifications } from '../hooks/useNotifications';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { initializeContent } from '../services/firebaseContentService';
+import { logger } from '../utils/logger';
 
 // Conditional Sentry import with error handling for React 19 compatibility
 let Sentry: typeof import('@sentry/react-native') | null = null;
@@ -16,7 +19,6 @@ try {
   if (sentryDsn && Sentry) {
     Sentry.init({
       dsn: sentryDsn,
-      enableInExpoDevelopment: false,
       debug: false,
       environment: __DEV__ ? 'development' : 'production',
     });
@@ -28,6 +30,18 @@ try {
 export default function RootLayout() {
   // Initialize notifications
   useNotifications();
+
+  // Initialize Firebase content on app launch
+  useEffect(() => {
+    initializeContent()
+      .then(() => {
+        logger.info('Content initialization complete');
+      })
+      .catch((error) => {
+        logger.error('Content initialization failed', error);
+        // App continues with cached/bundled content
+      });
+  }, []);
 
   return (
     <ErrorBoundary>

@@ -1,6 +1,5 @@
 import { Practice } from '../types';
-import { getParamiById } from '../data/paramis';
-import { getExpandedPractices } from '../data/expandedPractices';
+import { getParamiById, getExpandedPractices } from './firebaseContentService';
 
 /**
  * Content Service

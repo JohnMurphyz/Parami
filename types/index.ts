@@ -42,7 +42,25 @@ export interface UserPreferences {
   checkedPractices?: Record<number, string[]>; // Checked practice IDs by Parami ID
 }
 
+// Firebase content metadata
+export interface ContentMetadata {
+  version: number; // Increment on each content update
+  lastUpdated: string; // ISO timestamp
+  publishedBy?: string; // Admin email (optional)
+  minAppVersion?: string; // Minimum app version required (optional)
+}
+
+// Content cache structure stored in AsyncStorage
+export interface ContentCache {
+  version: number; // Content version number
+  lastFetched: string; // ISO timestamp of last successful fetch
+  paramis: Parami[]; // All 10 Paramis
+  expandedPractices: Record<number, Practice[]>; // Expanded practices by Parami ID
+  metadata?: ContentMetadata; // Optional metadata
+}
+
 // Storage keys
 export const STORAGE_KEYS = {
   PREFERENCES: '@parami_app:preferences',
+  CONTENT_CACHE: '@parami_app:content_cache',
 } as const;

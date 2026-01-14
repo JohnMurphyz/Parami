@@ -35,6 +35,7 @@ module.exports = {
     },
     plugins: [
       "expo-router",
+      "expo-font",
       [
         "expo-notifications",
         {
@@ -42,31 +43,40 @@ module.exports = {
           color: "#ffffff",
           sounds: []
         }
-      ],
-      [
-        "sentry-expo",
-        {
-          organization: process.env.SENTRY_ORG || "john-murphy",
-          project: process.env.SENTRY_PROJECT || "parami-app"
-        }
       ]
+      // Sentry temporarily disabled for preview builds
+      // [
+      //   "sentry-expo",
+      //   {
+      //     organization: process.env.SENTRY_ORG || "john-murphy",
+      //     project: process.env.SENTRY_PROJECT || "parami-app"
+      //   }
+      // ]
     ],
-    hooks: {
-      postPublish: [
-        {
-          file: "sentry-expo/upload-sourcemaps",
-          config: {
-            organization: process.env.SENTRY_ORG || "john-murphy",
-            project: process.env.SENTRY_PROJECT || "parami-app"
-          }
-        }
-      ]
-    },
+    // Sentry hooks temporarily disabled
+    // hooks: {
+    //   postPublish: [
+    //     {
+    //       file: "sentry-expo/upload-sourcemaps",
+    //       config: {
+    //         organization: process.env.SENTRY_ORG || "john-murphy",
+    //         project: process.env.SENTRY_PROJECT || "parami-app"
+    //       }
+    //     }
+    //   ]
+    // },
     extra: {
-      sentryDsn: process.env.SENTRY_DSN,
       eas: {
-        projectId: "your-project-id" // Will be set when you run 'eas build:configure'
-      }
+        projectId: "9fc0324d-bbf1-4199-bea9-08902a3873d0"
+      },
+      sentryDsn: process.env.SENTRY_DSN,
+      firebaseApiKey: process.env.FIREBASE_API_KEY,
+      firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN,
+      firebaseProjectId: process.env.FIREBASE_PROJECT_ID,
+      firebaseStorageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+      firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+      firebaseAppId: process.env.FIREBASE_APP_ID,
+      firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID
     }
   }
 };
