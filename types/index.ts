@@ -27,9 +27,10 @@ export interface Practice {
   context: 'work' | 'home' | 'relationships' | 'personal' | 'any';
 }
 
-// Journal entry structure
+// Journal entry structure (legacy/unstructured entries)
 export interface JournalEntry {
   id: string; // unique ID
+  type: 'unstructured'; // Discriminator for entry type
   paramiId: number; // Associated Parami (1-10)
   date: string; // ISO date string
   content: string; // Journal text
@@ -125,11 +126,124 @@ export interface QuizResult {
   scores: ParamiScore[]; // Calculated scores
 }
 
+// ============================================================================
+// Structured Reflection System Types
+// ============================================================================
+
+// Emotional/Sentiment Tracking
+export type EmotionalState = 'peaceful' | 'grateful' | 'challenged' | 'restless' | 'discouraged';
+export type ResilienceLevel = 'stable' | 'wavering' | 'struggling';
+
+// Ego Audit Section - Unmasking Self-Deception
+export interface EgoAuditResponse {
+  lordsOfMaterialism: {
+    lordOfForm: boolean;        // Seeking neurotic comfort
+    lordOfSpeech: boolean;      // Using intellect as shield
+    lordOfMind: boolean;        // Using spirituality to feel special
+    notes: string;              // Additional notes on which lords appeared
+  };
+  spiritualAdvisor: string;     // Rationalizations caught today
+  areYouSure: string;           // Perception challenges
+}
+
+// Garden Log Section - Selective Watering
+export interface GardenLogResponse {
+  wholesomeSeeds: string[];     // e.g., ['generosity', 'patience', 'mindfulness']
+  unwholesomeSeeds: string[];   // e.g., ['anger', 'jealousy', 'craving']
+  changingThePeg: string;       // Moments of thought replacement
+  helloHabitEnergy: string;     // "Mere recognition" moments
+}
+
+// Nutriment Audit Section - Mental Diet Tracking
+export interface NutrimentAuditResponse {
+  edibleFood: {
+    wasMindful: boolean;
+    notes: string;
+  };
+  senseImpressions: {
+    toxicMedia: string[];       // What toxic content consumed
+    impact: string;             // How it affected you
+  };
+  intention: {
+    deepDesire: string;         // What drove you today
+    selfOrOthers: 'self' | 'others' | 'both';
+  };
+  collectiveEnergy: string;     // What energies influenced you
+}
+
+// Vicissitudes Section - Resilience Tracking (8 Worldly Conditions)
+export interface VicissitudesResponse {
+  worldlyConditions: {
+    gain?: { occurred: boolean; reaction: string; };
+    loss?: { occurred: boolean; reaction: string; };
+    fame?: { occurred: boolean; reaction: string; };
+    disrepute?: { occurred: boolean; reaction: string; };
+    praise?: { occurred: boolean; reaction: string; };
+    blame?: { occurred: boolean; reaction: string; };
+    pleasure?: { occurred: boolean; reaction: string; };
+    pain?: { occurred: boolean; reaction: string; };
+  };
+  secondArrow: {
+    occurred: boolean;
+    description: string;        // What second arrow did you add
+  };
+}
+
+// Disappointment Section - Landing on Hard Ground
+export interface DisappointmentResponse {
+  practiceFeltTedious: boolean;
+  hardGroundMoments: string;    // Times you landed on hard ground
+  softLandingAttempts: string;  // Times you sought spiritual fantasy
+}
+
+// Complete Structured Reflection
+export interface StructuredReflection {
+  id: string;                   // Format: structured_${timestamp}_${paramiId}
+  type: 'structured';           // Discriminator
+  paramiId: number;
+  date: string;                 // ISO date (YYYY-MM-DD)
+  createdAt: string;            // ISO timestamp
+  updatedAt: string;            // ISO timestamp
+
+  // Completion tracking
+  completedSections: {
+    egoAudit: boolean;
+    gardenLog: boolean;
+    nutrimentAudit: boolean;
+    vicissitudes: boolean;
+    disappointment: boolean;
+  };
+
+  // The Five Sections
+  egoAudit?: EgoAuditResponse;
+  gardenLog?: GardenLogResponse;
+  nutrimentAudit?: NutrimentAuditResponse;
+  vicissitudes?: VicissitudesResponse;
+  disappointment?: DisappointmentResponse;
+
+  // Fixed Daily Prompts Responses
+  dailyPrompts: {
+    selfReliance: string;       // "Did I act as my own master..."
+    nowness: string;            // "How many times did I stop the horse..."
+    nonAttachment: string;      // "Which cows did I release..."
+    clarity: string;            // "Did I look at my mind like a mirror..."
+  };
+
+  // Emotional/Sentiment Tracking
+  emotionalState: EmotionalState;
+  resilienceLevel: ResilienceLevel;
+  overallReflection: string;    // Summary/closing thoughts
+}
+
+// Union type for all entries
+export type ReflectionEntry = StructuredReflection | JournalEntry;
+
 // Storage keys
 export const STORAGE_KEYS = {
   PREFERENCES: '@parami_app:preferences',
   CONTENT_CACHE: '@parami_app:content_cache',
   JOURNAL_ENTRIES: '@parami_app:journal_entries',
+  STRUCTURED_REFLECTIONS: '@parami_app:structured_reflections',
   FAVORITES: '@parami_app:favorites',
   HISTORY: '@parami_app:history',
   QUIZ_RESULTS: '@parami_app:quiz_results',

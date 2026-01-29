@@ -13,6 +13,13 @@ export const Colors = {
   deepMoss: '#3D4E3A',
   shadowIndigo: '#4A4458',
 
+  // Emotional States (for reflection tracking)
+  emotionalPeaceful: '#6B9080',      // Soft green
+  emotionalGrateful: '#D4A373',      // Warm gold
+  emotionalChallenged: '#E67E22',    // Orange
+  emotionalRestless: '#A67DB8',      // Purple
+  emotionalDiscouraged: '#95A5A6',   // Gray
+
   // Neutrals
   softAsh: '#E8E4DD',
   mediumStone: '#9D9186',

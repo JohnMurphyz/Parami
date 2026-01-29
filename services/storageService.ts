@@ -712,3 +712,192 @@ export async function deleteQuizResult(id: string): Promise<void> {
   }
 }
 
+// ============================================================================
+// STRUCTURED REFLECTIONS
+// ============================================================================
+
+/**
+ * Migrate existing journal entries to add type discriminator
+ * Run this once on app update to tag existing entries as 'unstructured'
+ */
+export async function migrateJournalEntries(): Promise<void> {
+  try {
+    const existing = await loadJournalEntries();
+
+    // Check if migration already happened (first entry has type field)
+    if (existing.length > 0 && 'type' in existing[0]) {
+      logger.info('Journal entries already migrated');
+      return;
+    }
+
+    const migrated = existing.map((entry: any) => ({
+      ...entry,
+      type: 'unstructured' as const,
+    }));
+
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.JOURNAL_ENTRIES,
+      JSON.stringify(migrated)
+    );
+
+    logger.info('Migrated journal entries to include type discriminator');
+  } catch (error) {
+    logger.error('Error migrating journal entries', error);
+    throw error;
+  }
+}
+
+/**
+ * Load all structured reflections
+ */
+export async function loadStructuredReflections(): Promise<import('../types').StructuredReflection[]> {
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.STRUCTURED_REFLECTIONS);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    logger.error('Error loading structured reflections', error);
+    return [];
+  }
+}
+
+/**
+ * Save or update a structured reflection
+ * Supports partial saves (resume later)
+ */
+export async function saveStructuredReflection(
+  reflection: import('../types').StructuredReflection
+): Promise<import('../types').StructuredReflection> {
+  try {
+    const all = await loadStructuredReflections();
+    const existingIndex = all.findIndex((r) => r.id === reflection.id);
+
+    const updated = {
+      ...reflection,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (existingIndex >= 0) {
+      all[existingIndex] = updated;
+      logger.info('Updated structured reflection', { id: reflection.id });
+    } else {
+      all.push(updated);
+      logger.info('Created new structured reflection', { id: reflection.id });
+    }
+
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.STRUCTURED_REFLECTIONS,
+      JSON.stringify(all)
+    );
+
+    // Update history entry to mark hasJournalEntry
+    await updateHistoryEntry(reflection.paramiId);
+
+    return updated;
+  } catch (error) {
+    logger.error('Error saving structured reflection', error);
+    throw error;
+  }
+}
+
+/**
+ * Get today's structured reflection (or create new one)
+ */
+export async function getTodayReflection(
+  paramiId: number
+): Promise<import('../types').StructuredReflection> {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const all = await loadStructuredReflections();
+    const existing = all.find((r) => r.date === today && r.paramiId === paramiId);
+
+    if (existing) {
+      logger.info('Found existing reflection for today', { id: existing.id });
+      return existing;
+    }
+
+    // Create new structured reflection
+    const newReflection: import('../types').StructuredReflection = {
+      id: `structured_${Date.now()}_${paramiId}`,
+      type: 'structured',
+      paramiId,
+      date: today,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      completedSections: {
+        egoAudit: false,
+        gardenLog: false,
+        nutrimentAudit: false,
+        vicissitudes: false,
+        disappointment: false,
+      },
+      dailyPrompts: {
+        selfReliance: '',
+        nowness: '',
+        nonAttachment: '',
+        clarity: '',
+      },
+      emotionalState: 'peaceful',
+      resilienceLevel: 'stable',
+      overallReflection: '',
+    };
+
+    logger.info('Created new reflection for today', { id: newReflection.id });
+    return newReflection;
+  } catch (error) {
+    logger.error('Error getting today reflection', error);
+    throw error;
+  }
+}
+
+/**
+ * Load all reflection entries (both structured and unstructured)
+ */
+export async function loadAllReflectionEntries(): Promise<import('../types').ReflectionEntry[]> {
+  try {
+    const [structured, unstructured] = await Promise.all([
+      loadStructuredReflections(),
+      loadJournalEntries(),
+    ]);
+
+    // Combine and sort by date (most recent first)
+    const all: import('../types').ReflectionEntry[] = [...structured, ...unstructured];
+    return all.sort((a, b) => b.date.localeCompare(a.date));
+  } catch (error) {
+    logger.error('Error loading all reflection entries', error);
+    return [];
+  }
+}
+
+/**
+ * Get structured reflection by ID
+ */
+export async function getStructuredReflectionById(
+  id: string
+): Promise<import('../types').StructuredReflection | undefined> {
+  try {
+    const reflections = await loadStructuredReflections();
+    return reflections.find((r) => r.id === id);
+  } catch (error) {
+    logger.error('Error getting structured reflection by ID', error);
+    return undefined;
+  }
+}
+
+/**
+ * Delete a structured reflection by ID
+ */
+export async function deleteStructuredReflection(id: string): Promise<void> {
+  try {
+    const reflections = await loadStructuredReflections();
+    const filtered = reflections.filter((r) => r.id !== id);
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.STRUCTURED_REFLECTIONS,
+      JSON.stringify(filtered)
+    );
+    logger.info('Structured reflection deleted', { id });
+  } catch (error) {
+    logger.error('Error deleting structured reflection', error);
+    throw error;
+  }
+}
+

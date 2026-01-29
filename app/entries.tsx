@@ -3,18 +3,25 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { loadJournalEntries } from '../services/storageService';
+import { loadAllReflectionEntries } from '../services/storageService';
 import { getParamiById } from '../services/firebaseContentService';
-import { JournalEntry } from '../types';
+import { ReflectionEntry, StructuredReflection } from '../types';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
 import ScreenHeader from '../components/ScreenHeader';
 import ParamiFilterDropdown from '../components/ParamiFilterDropdown';
+import StructuredEntryCard from '../components/StructuredEntryCard';
+import StructuredEntryDetailModal from '../components/StructuredEntryDetailModal';
+
+type EntryTypeFilter = 'all' | 'quick' | 'deep';
 
 export default function EntriesScreen() {
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [entries, setEntries] = useState<ReflectionEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedParamiIds, setSelectedParamiIds] = useState<number[]>([]);
+  const [entryTypeFilter, setEntryTypeFilter] = useState<EntryTypeFilter>('all');
+  const [selectedStructuredEntry, setSelectedStructuredEntry] = useState<StructuredReflection | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
     loadEntries();
@@ -30,15 +37,19 @@ export default function EntriesScreen() {
   const loadEntries = async () => {
     try {
       setLoading(true);
-      const journalData = await loadJournalEntries();
-      // Sort by most recent
-      const sorted = journalData.sort((a, b) => b.date.localeCompare(a.date));
-      setEntries(sorted);
+      const allEntries = await loadAllReflectionEntries();
+      // Sort by most recent (already sorted by loadAllReflectionEntries)
+      setEntries(allEntries);
     } catch (error) {
       console.error('Error loading entries:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleStructuredEntryPress = (entry: StructuredReflection) => {
+    setSelectedStructuredEntry(entry);
+    setShowDetailModal(true);
   };
 
   const formatDate = (dateString: string) => {
@@ -50,10 +61,17 @@ export default function EntriesScreen() {
     });
   };
 
-  // Filter entries based on selected paramis
-  const filteredEntries = selectedParamiIds.length === 0
+  // Filter entries based on selected paramis and entry type
+  let filteredEntries = selectedParamiIds.length === 0
     ? entries
     : entries.filter(entry => selectedParamiIds.includes(entry.paramiId));
+
+  // Apply entry type filter
+  if (entryTypeFilter === 'quick') {
+    filteredEntries = filteredEntries.filter(entry => entry.type === 'unstructured');
+  } else if (entryTypeFilter === 'deep') {
+    filteredEntries = filteredEntries.filter(entry => entry.type === 'structured');
+  }
 
   if (loading) {
     return (
@@ -64,20 +82,94 @@ export default function EntriesScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.content}>
-        {/* Screen Header with Back Button and Filter */}
-        <ScreenHeader
-          title="Journal Entries"
-          subtitle={`${filteredEntries.length} reflection${filteredEntries.length !== 1 ? 's' : ''}`}
-          onBack={() => router.back()}
-          renderFilter={() => (
-            <ParamiFilterDropdown
-              selectedParamiIds={selectedParamiIds}
-              onSelectionChange={setSelectedParamiIds}
-            />
-          )}
-        />
+    <>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.content}>
+          {/* Screen Header with Back Button and Filter */}
+          <ScreenHeader
+            title="Reflections"
+            subtitle={`${filteredEntries.length} ${entryTypeFilter === 'all' ? 'total' : entryTypeFilter === 'deep' ? 'deep' : 'quick'} reflection${filteredEntries.length !== 1 ? 's' : ''}`}
+            onBack={() => router.back()}
+            renderFilter={() => (
+              <ParamiFilterDropdown
+                selectedParamiIds={selectedParamiIds}
+                onSelectionChange={setSelectedParamiIds}
+              />
+            )}
+          />
+
+          {/* Entry Type Filter */}
+          <View style={styles.entryTypeFilter}>
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                entryTypeFilter === 'all' && styles.filterButtonActive,
+              ]}
+              onPress={() => setEntryTypeFilter('all')}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityState={{ selected: entryTypeFilter === 'all' }}
+            >
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  entryTypeFilter === 'all' && styles.filterButtonTextActive,
+                ]}
+              >
+                All
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                entryTypeFilter === 'deep' && styles.filterButtonActive,
+              ]}
+              onPress={() => setEntryTypeFilter('deep')}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityState={{ selected: entryTypeFilter === 'deep' }}
+            >
+              <Ionicons
+                name="flower"
+                size={16}
+                color={entryTypeFilter === 'deep' ? Colors.saffronGold : Colors.deepStone}
+              />
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  entryTypeFilter === 'deep' && styles.filterButtonTextActive,
+                ]}
+              >
+                Deep Reflections
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                entryTypeFilter === 'quick' && styles.filterButtonActive,
+              ]}
+              onPress={() => setEntryTypeFilter('quick')}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityState={{ selected: entryTypeFilter === 'quick' }}
+            >
+              <Ionicons
+                name="create"
+                size={16}
+                color={entryTypeFilter === 'quick' ? Colors.saffronGold : Colors.deepStone}
+              />
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  entryTypeFilter === 'quick' && styles.filterButtonTextActive,
+                ]}
+              >
+                Quick Entries
+              </Text>
+            </TouchableOpacity>
+          </View>
 
         {/* Show active filters */}
         {selectedParamiIds.length > 0 && (
@@ -127,12 +219,25 @@ export default function EntriesScreen() {
             </Text>
           </View>
         ) : (
-          filteredEntries.map((entry, index) => {
+          filteredEntries.map((entry) => {
             const parami = getParamiById(entry.paramiId);
             if (!parami) return null;
 
+            // Render structured entry card
+            if (entry.type === 'structured') {
+              return (
+                <StructuredEntryCard
+                  key={entry.id}
+                  entry={entry}
+                  paramiName={`${parami.name} — ${parami.englishName}`}
+                  onPress={() => handleStructuredEntryPress(entry)}
+                />
+              );
+            }
+
+            // Render unstructured entry card
             return (
-              <View key={`${entry.date}-${entry.paramiId}`} style={styles.entryCard}>
+              <View key={entry.id} style={styles.entryCard}>
                 <View style={styles.entryHeader}>
                   <Text style={styles.entryDate}>
                     {formatDate(entry.date)}
@@ -146,8 +251,22 @@ export default function EntriesScreen() {
             );
           })
         )}
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+
+      {/* Structured Entry Detail Modal */}
+      {selectedStructuredEntry && (
+        <StructuredEntryDetailModal
+          visible={showDetailModal}
+          entry={selectedStructuredEntry}
+          paramiName={`${getParamiById(selectedStructuredEntry.paramiId)?.name} — ${getParamiById(selectedStructuredEntry.paramiId)?.englishName}`}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedStructuredEntry(null);
+          }}
+        />
+      )}
+    </>
   );
 }
 
@@ -252,5 +371,41 @@ const styles = StyleSheet.create({
   entryContent: {
     ...Typography.journalEntry,
     color: Colors.deepStone,
+  },
+  entryTypeFilter: {
+    flexDirection: 'row',
+    backgroundColor: Colors.warmStone,
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 16,
+    gap: 4,
+  },
+  filterButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    gap: 6,
+  },
+  filterButtonActive: {
+    backgroundColor: Colors.pureWhite,
+    shadowColor: Colors.deepCharcoal,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  filterButtonText: {
+    ...Typography.body,
+    fontSize: 14,
+    color: Colors.deepStone,
+    fontWeight: '500',
+  },
+  filterButtonTextActive: {
+    color: Colors.saffronGold,
+    fontWeight: '700',
   },
 });
