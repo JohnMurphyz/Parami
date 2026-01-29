@@ -31,11 +31,11 @@ export const Typography = {
     color: Colors.deepCharcoal,
   },
   h3: {
-    fontSize: 12,
-    fontWeight: '700' as const,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase' as const,
-    color: Colors.mediumStone,
+    fontSize: 13,
+    fontWeight: '600' as const,
+    letterSpacing: 0.8,
+    textTransform: 'capitalize' as const,
+    color: Colors.deepStone,
   },
 
   // Body
@@ -65,5 +65,21 @@ export const Typography = {
     fontStyle: 'italic' as const,
     lineHeight: 30,
     color: Colors.deepCharcoal,
+  },
+
+  // Journal/Organic styles
+  journalEntry: {
+    fontSize: 16,
+    fontWeight: '400' as const,
+    lineHeight: 26,
+    color: Colors.inkBrown,
+    letterSpacing: 0.2,
+  },
+  softEmphasis: {
+    fontSize: 15,
+    fontWeight: '400' as const,
+    lineHeight: 24,
+    color: Colors.mediumStone,
+    fontStyle: 'italic' as const,
   },
 };

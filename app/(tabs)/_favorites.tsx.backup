@@ -1,0 +1,447 @@
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Share } from 'react-native';
+import { useState, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import {
+  loadFavorites,
+  removeFromFavorites,
+} from '../../services/storageService';
+import { getParamiById } from '../../services/firebaseContentService';
+import { getAvailablePractices } from '../../services/contentService';
+import { Favorite, Practice } from '../../types';
+import { Colors } from '../../constants/Colors';
+import { Typography } from '../../constants/Typography';
+
+interface QuoteFavoriteProps {
+  favorite: Favorite;
+  onRemove: (id: string) => void;
+  onShare: (favorite: Favorite) => void;
+}
+
+const QuoteFavorite = ({ favorite, onRemove, onShare }: QuoteFavoriteProps) => {
+  const parami = getParamiById(favorite.paramiId);
+  if (!parami) return null;
+
+  const quote = parami.quote;
+
+  return (
+    <View style={styles.favoriteCard}>
+      <View style={styles.favoriteHeader}>
+        <View style={styles.favoriteTypeBadge}>
+          <Ionicons name="chatbox-ellipses" size={16} color={Colors.lotusPink} />
+          <Text style={styles.favoriteTypeText}>Quote</Text>
+        </View>
+        <View style={styles.favoriteActions}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => onShare(favorite)}
+            activeOpacity={0.6}
+            accessibilityLabel="Share quote"
+            accessibilityRole="button"
+          >
+            <Ionicons name="share-outline" size={20} color={Colors.deepStone} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => onRemove(favorite.id)}
+            activeOpacity={0.6}
+            accessibilityLabel="Remove from favorites"
+            accessibilityRole="button"
+          >
+            <Ionicons name="heart" size={20} color={Colors.lotusPink} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <Text style={styles.paramiLabel}>
+        {parami.name} — {parami.englishName}
+      </Text>
+
+      <View style={styles.quoteContent}>
+        <Text style={styles.quoteText}>"{quote.text}"</Text>
+        <Text style={styles.quoteAuthor}>— {quote.author}</Text>
+        {quote.source && <Text style={styles.quoteSource}>{quote.source}</Text>}
+      </View>
+    </View>
+  );
+};
+
+interface PracticeFavoriteProps {
+  favorite: Favorite;
+  practice: Practice;
+  onRemove: (id: string) => void;
+  onShare: (favorite: Favorite) => void;
+}
+
+const PracticeFavorite = ({ favorite, practice, onRemove, onShare }: PracticeFavoriteProps) => {
+  const parami = getParamiById(favorite.paramiId);
+  if (!parami) return null;
+
+  const difficultyColors = {
+    easy: Colors.deepMoss,
+    medium: Colors.saffronGold,
+    challenging: Colors.burntSienna,
+  };
+
+  return (
+    <View style={styles.favoriteCard}>
+      <View style={styles.favoriteHeader}>
+        <View style={styles.favoriteTypeBadge}>
+          <Ionicons name="checkmark-circle" size={16} color={Colors.saffronGold} />
+          <Text style={styles.favoriteTypeText}>Practice</Text>
+        </View>
+        <View style={styles.favoriteActions}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => onShare(favorite)}
+            activeOpacity={0.6}
+            accessibilityLabel="Share practice"
+            accessibilityRole="button"
+          >
+            <Ionicons name="share-outline" size={20} color={Colors.deepStone} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => onRemove(favorite.id)}
+            activeOpacity={0.6}
+            accessibilityLabel="Remove from favorites"
+            accessibilityRole="button"
+          >
+            <Ionicons name="heart" size={20} color={Colors.lotusPink} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <Text style={styles.paramiLabel}>
+        {parami.name} — {parami.englishName}
+      </Text>
+
+      <View style={styles.practiceContent}>
+        <View style={styles.practiceMetadata}>
+          <Text
+            style={[
+              styles.practiceDifficulty,
+              { color: difficultyColors[practice.difficulty] },
+            ]}
+          >
+            {practice.difficulty.charAt(0).toUpperCase() + practice.difficulty.slice(1)}
+          </Text>
+          <Text style={styles.practiceContext}>• {practice.context}</Text>
+        </View>
+        <Text style={styles.practiceTitle}>{practice.title}</Text>
+        <Text style={styles.practiceDescription}>{practice.description}</Text>
+      </View>
+    </View>
+  );
+};
+
+export default function FavoritesScreen() {
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [practiceData, setPracticeData] = useState<Map<string, Practice>>(new Map());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadFavoritesList();
+  }, []);
+
+  // Reload favorites when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      loadFavoritesList();
+    }, [])
+  );
+
+  const loadFavoritesList = async () => {
+    try {
+      setLoading(true);
+      const favs = await loadFavorites();
+      // Sort by most recently added
+      const sortedFavs = favs.sort((a, b) => b.addedAt.localeCompare(a.addedAt));
+      setFavorites(sortedFavs);
+
+      // Load all practice data
+      const practiceMap = new Map<string, Practice>();
+      for (const fav of sortedFavs) {
+        if (fav.type === 'practice') {
+          const allPractices = getAvailablePractices(fav.paramiId, []);
+          const practice = allPractices.find((p) => p.id === fav.itemId);
+          if (practice) {
+            practiceMap.set(fav.itemId, practice);
+          }
+        }
+      }
+      setPracticeData(practiceMap);
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemove = async (favoriteId: string) => {
+    Alert.alert(
+      'Remove Favorite',
+      'Are you sure you want to remove this from your favorites?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await removeFromFavorites(favoriteId);
+              await loadFavoritesList();
+            } catch (error) {
+              Alert.alert('Error', 'Failed to remove favorite. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleShare = async (favorite: Favorite) => {
+    try {
+      const parami = getParamiById(favorite.paramiId);
+      if (!parami) return;
+
+      let message = '';
+
+      if (favorite.type === 'quote') {
+        const quote = parami.quote;
+        message = `"${quote.text}"\n\n— ${quote.author}${
+          quote.source ? `\n${quote.source}` : ''
+        }\n\nFrom Parami: ${parami.name} — ${parami.englishName}`;
+      } else {
+        const practice = practiceData.get(favorite.itemId);
+        if (practice) {
+          message = `${practice.title}\n\n${practice.description}\n\nFrom Parami: ${parami.name} — ${parami.englishName}`;
+        }
+      }
+
+      if (message) {
+        await Share.share({ message });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.loadingText}>Loading favorites...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.content}>
+        {favorites.length === 0 ? (
+          <View style={styles.emptyState}>
+            <View style={styles.emptyIllustration}>
+              <Ionicons name="heart-outline" size={48} color={Colors.lotusPink} style={{ opacity: 0.4 }} />
+              <Ionicons name="heart-outline" size={32} color={Colors.lotusPink}
+                style={{ position: 'absolute', top: 8, left: 8, opacity: 0.7 }} />
+            </View>
+            <Text style={styles.emptyStateTitle}>Treasures to Return To</Text>
+            <Text style={styles.emptyStateText}>
+              When a quote or practice resonates, save it here. These become touchstones in your practice.
+            </Text>
+          </View>
+        ) : (
+          <>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Your Favorites</Text>
+              <Text style={styles.headerSubtitle}>
+                {favorites.length} item{favorites.length !== 1 ? 's' : ''} saved
+              </Text>
+            </View>
+
+            {favorites.map((favorite) => {
+              if (favorite.type === 'quote') {
+                return (
+                  <QuoteFavorite
+                    key={favorite.id}
+                    favorite={favorite}
+                    onRemove={handleRemove}
+                    onShare={handleShare}
+                  />
+                );
+              } else {
+                const practice = practiceData.get(favorite.itemId);
+                if (!practice) return null;
+                return (
+                  <PracticeFavorite
+                    key={favorite.id}
+                    favorite={favorite}
+                    practice={practice}
+                    onRemove={handleRemove}
+                    onShare={handleShare}
+                  />
+                );
+              }
+            })}
+          </>
+        )}
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.warmStone,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    padding: 24,
+    paddingBottom: 48,
+  },
+  loadingText: {
+    ...Typography.body,
+    color: Colors.mediumStone,
+  },
+  header: {
+    marginBottom: 24,
+  },
+  headerTitle: {
+    ...Typography.h1,
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    ...Typography.body,
+    color: Colors.mediumStone,
+  },
+  emptyState: {
+    backgroundColor: Colors.warmPaper,
+    borderRadius: 18,
+    padding: 32,
+    alignItems: 'center',
+    shadowColor: Colors.deepCharcoal,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+    marginTop: 40,
+    transform: [{ rotate: '0.3deg' }],
+  },
+  emptyIllustration: {
+    position: 'relative',
+    width: 56,
+    height: 56,
+    marginBottom: 16,
+  },
+  emptyStateTitle: {
+    ...Typography.h1,
+    fontSize: 22,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  emptyStateText: {
+    ...Typography.bodyLarge,
+    color: Colors.mediumStone,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  favoriteCard: {
+    backgroundColor: Colors.pureWhite,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: Colors.deepCharcoal,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  favoriteHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  favoriteTypeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.saffronGold08,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  favoriteTypeText: {
+    ...Typography.caption,
+    color: Colors.deepStone,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  favoriteActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.warmStone,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  paramiLabel: {
+    ...Typography.body,
+    color: Colors.saffronGold,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  quoteContent: {
+    gap: 8,
+  },
+  quoteText: {
+    ...Typography.quote,
+    color: Colors.deepCharcoal,
+  },
+  quoteAuthor: {
+    ...Typography.body,
+    color: Colors.deepStone,
+    fontWeight: '600',
+  },
+  quoteSource: {
+    ...Typography.caption,
+    color: Colors.mediumStone,
+  },
+  practiceContent: {
+    gap: 8,
+  },
+  practiceMetadata: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  practiceDifficulty: {
+    ...Typography.caption,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  practiceContext: {
+    ...Typography.caption,
+    color: Colors.mediumStone,
+    marginLeft: 4,
+  },
+  practiceTitle: {
+    ...Typography.h2,
+    color: Colors.deepCharcoal,
+  },
+  practiceDescription: {
+    ...Typography.body,
+    color: Colors.deepStone,
+    lineHeight: 22,
+  },
+});

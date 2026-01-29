@@ -27,6 +27,34 @@ export interface Practice {
   context: 'work' | 'home' | 'relationships' | 'personal' | 'any';
 }
 
+// Journal entry structure
+export interface JournalEntry {
+  id: string; // unique ID
+  paramiId: number; // Associated Parami (1-10)
+  date: string; // ISO date string
+  content: string; // Journal text
+  createdAt: string; // ISO timestamp
+  updatedAt: string; // ISO timestamp
+}
+
+// Favorite item (practice or quote)
+export interface Favorite {
+  id: string; // unique ID
+  type: 'practice' | 'quote';
+  paramiId: number; // Associated Parami (1-10)
+  itemId: string; // Practice ID or Quote ID
+  addedAt: string; // ISO timestamp
+}
+
+// Daily history entry
+export interface HistoryEntry {
+  date: string; // ISO date string (YYYY-MM-DD)
+  paramiId: number; // Which Parami was shown (1-10)
+  practicesCompleted: string[]; // Practice IDs completed that day
+  hasJournalEntry: boolean; // Whether user wrote a journal entry
+  visitedAt: string; // ISO timestamp of first visit that day
+}
+
 // User preferences stored in AsyncStorage
 export interface UserPreferences {
   notificationTime: string; // "09:00" format
@@ -40,6 +68,11 @@ export interface UserPreferences {
   lastQueueRefreshDate?: string; // ISO date of last daily rotation
   hasCompletedOnboarding?: boolean; // Whether user has completed first-launch onboarding
   checkedPractices?: Record<number, string[]>; // Checked practice IDs by Parami ID
+  currentStreak?: number; // Current daily streak
+  longestStreak?: number; // Longest streak achieved
+  lastVisitDate?: string; // ISO date string of last app visit (for streak tracking)
+  hasCompletedDiagnosticQuiz?: boolean; // Whether user has completed The Crossing Over Diagnostic
+  lastQuizDate?: string; // ISO date string of last diagnostic completion
 }
 
 // Firebase content metadata
@@ -59,8 +92,45 @@ export interface ContentCache {
   metadata?: ContentMetadata; // Optional metadata
 }
 
+// Quiz question structure
+export interface QuizQuestion {
+  id: number; // 1-10 (maps to parami ID)
+  paramiName: string; // Pali name (e.g., "Dāna")
+  englishName: string; // English translation (e.g., "Generosity")
+  strengthStatement: string;
+  weaknessStatement: string;
+}
+
+// Individual question response
+export interface QuizResponse {
+  paramiId: number;
+  strengthRating: number; // 1-5
+  weaknessRating: number; // 1-5
+}
+
+// Calculated score for a parami
+export interface ParamiScore {
+  paramiId: number;
+  strengthRating: number; // 1-5
+  weaknessRating: number; // 1-5
+  normalizedScore: number; // 0-100 (calculated)
+}
+
+// Complete quiz result
+export interface QuizResult {
+  id: string; // unique ID (timestamp-based)
+  date: string; // ISO date string (YYYY-MM-DD)
+  completedAt: string; // ISO timestamp
+  responses: QuizResponse[]; // All 10 responses
+  scores: ParamiScore[]; // Calculated scores
+}
+
 // Storage keys
 export const STORAGE_KEYS = {
   PREFERENCES: '@parami_app:preferences',
   CONTENT_CACHE: '@parami_app:content_cache',
+  JOURNAL_ENTRIES: '@parami_app:journal_entries',
+  FAVORITES: '@parami_app:favorites',
+  HISTORY: '@parami_app:history',
+  QUIZ_RESULTS: '@parami_app:quiz_results',
 } as const;

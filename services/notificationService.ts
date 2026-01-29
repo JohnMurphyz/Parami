@@ -1,8 +1,12 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { getTodayParamiId } from './storageService';
-import { getParamiById } from './firebaseContentService';
+import { getParamiById, isContentReady } from './firebaseContentService';
 import { logger } from '../utils/logger';
+
+// Content readiness tracking for deferred notification scheduling
+let contentReadyCallbacks: Array<() => void> = [];
+let isContentInitialized = false;
 
 // Configure how notifications should be handled when app is in foreground
 // This handler fetches current Parami dynamically to ensure accuracy
@@ -69,15 +73,51 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 }
 
 /**
- * Schedule a daily notification at the specified time
+ * Register callback to be called when content is ready
+ * If content is already ready, callback is invoked immediately
  */
-export async function scheduleNotification(time: string = '09:00'): Promise<void> {
+export function onContentReady(callback: () => void): void {
+  if (isContentInitialized) {
+    callback();
+  } else {
+    contentReadyCallbacks.push(callback);
+  }
+}
+
+/**
+ * Notify that content is ready and execute pending callbacks
+ * Should be called by firebaseContentService after initialization
+ */
+export function notifyContentReady(): void {
+  isContentInitialized = true;
+  contentReadyCallbacks.forEach(callback => {
+    try {
+      callback();
+    } catch (error) {
+      logger.error('Error in content ready callback', error);
+    }
+  });
+  contentReadyCallbacks = [];
+}
+
+/**
+ * Schedule a daily notification at the specified time
+ * Returns result object indicating success or failure with error message
+ */
+export async function scheduleNotification(time: string = '09:00'): Promise<{ success: boolean; error?: string }> {
   try {
+    // Check if content is ready before scheduling
+    if (!isContentReady()) {
+      const errorMsg = 'Content not ready yet. Notification will be scheduled when content loads.';
+      logger.warn(errorMsg);
+      return { success: false, error: errorMsg };
+    }
+
     // Request permissions first
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) {
       logger.info('Cannot schedule notification without permission');
-      return;
+      return { success: false, error: 'Notification permissions not granted' };
     }
 
     // Cancel any existing notifications
@@ -91,17 +131,21 @@ export async function scheduleNotification(time: string = '09:00'): Promise<void
     const parami = getParamiById(todayParamiId);
 
     if (!parami) {
-      logger.error('Could not find Parami for notification');
-      return;
+      const errorMsg = `Could not find Parami ${todayParamiId} for notification`;
+      logger.error(errorMsg);
+      return { success: false, error: errorMsg };
     }
 
     // Schedule daily repeating notification
-    await Notifications.scheduleNotificationAsync({
+    const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
         title: `Today's Parami: ${parami.englishName}`,
         body: parami.shortDescription,
         data: { paramiId: todayParamiId },
         sound: 'default',
+        ...(Platform.OS === 'android' && {
+          channelId: 'daily-parami',
+        }),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
@@ -111,10 +155,12 @@ export async function scheduleNotification(time: string = '09:00'): Promise<void
       },
     });
 
-    logger.info(`Notification scheduled for ${time} daily`);
+    logger.info(`Notification scheduled for ${time} daily with ID: ${notificationId}`);
+    return { success: true };
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Error scheduling notification', error);
-    throw error;
+    return { success: false, error: errorMsg };
   }
 }
 
@@ -165,10 +211,15 @@ export async function updateNotificationContent(notificationTime: string = '09:0
     }
 
     // Reschedule notification with updated content
-    await scheduleNotification(notificationTime);
+    const result = await scheduleNotification(notificationTime);
 
-    logger.info(`Notification content updated for Parami: ${parami.englishName}`);
+    if (result.success) {
+      logger.info(`Notification content updated for Parami: ${parami.englishName}`);
+    } else {
+      logger.error('Failed to update notification content', result.error);
+    }
   } catch (error) {
     logger.error('Error updating notification content', error);
   }
 }
+

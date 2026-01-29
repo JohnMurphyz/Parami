@@ -58,13 +58,13 @@ export default function TimeSetupScreen() {
 
   const handleComplete = async () => {
     await updatePreference('notificationTime', notificationTime);
-    await updatePreference('hasCompletedOnboarding', true);
 
     if (notificationsEnabled) {
       await scheduleNotification(notificationTime);
     }
 
-    router.replace('/(tabs)');
+    // Navigate to quiz prompt (onboarding completion happens there)
+    router.push('/onboarding/quiz-prompt');
   };
 
   return (

@@ -12,19 +12,39 @@ interface PracticeCardProps {
   onToggle?: () => void;
   onShuffle?: () => void;
   canShuffle?: boolean;
+  isFavorited?: boolean;
+  onFavorite?: () => void;
 }
 
-const PracticeCard = React.memo(({ practice, number, isChecked = false, onToggle, onShuffle, canShuffle = true }: PracticeCardProps) => {
+const PracticeCard = React.memo(({
+  practice,
+  number,
+  isChecked = false,
+  onToggle,
+  onShuffle,
+  canShuffle = true,
+  isFavorited = false,
+  onFavorite,
+}: PracticeCardProps) => {
   const difficultyColors = {
     easy: Colors.deepMoss,
     medium: Colors.saffronGold,
     challenging: Colors.burntSienna,
   };
 
+  // Add organic variance based on card number
+  const cardVariance = {
+    borderRadius: 16 + (number % 3) * 2,  // 16, 18, or 20
+    transform: [{ rotate: number % 2 === 1 ? '0.5deg' : '-0.3deg' }],
+    borderLeftWidth: number % 2 === 0 ? 3 : 4,
+    shadowRadius: number % 2 === 0 ? 8 : 12,
+  };
+
   return (
     <TouchableOpacity
       style={[
         styles.card,
+        cardVariance,
         isChecked && styles.cardChecked
       ]}
       onPress={onToggle}
@@ -47,6 +67,24 @@ const PracticeCard = React.memo(({ practice, number, isChecked = false, onToggle
           </Text>
           <Text style={styles.context}>• {practice.context}</Text>
         </View>
+        {onFavorite && (
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={(e) => {
+              e.stopPropagation();
+              onFavorite();
+            }}
+            activeOpacity={0.6}
+            accessibilityLabel={isFavorited ? "Remove from favorites" : "Add to favorites"}
+            accessibilityRole="button"
+          >
+            <Ionicons
+              name={isFavorited ? "heart" : "heart-outline"}
+              size={20}
+              color={isFavorited ? Colors.lotusPink : Colors.mediumStone}
+            />
+          </TouchableOpacity>
+        )}
         {onShuffle && !isChecked && canShuffle && (
           <TouchableOpacity
             style={styles.shuffleButton}
@@ -74,15 +112,13 @@ export default PracticeCard;
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.pureWhite,
-    borderRadius: 16,
     padding: 20,
-    borderLeftWidth: 4,
     borderLeftColor: Colors.saffronGold,
     shadowColor: Colors.deepCharcoal,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
-    shadowRadius: 8,
     elevation: 2,
+    // borderRadius, borderLeftWidth, shadowRadius, and transform are applied dynamically
   },
   cardChecked: {
     backgroundColor: Colors.saffronGold08,
@@ -141,6 +177,15 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     backgroundColor: Colors.saffronGold08,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+  },
+  favoriteButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.lotusPink12,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,

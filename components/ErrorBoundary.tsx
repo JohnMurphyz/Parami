@@ -4,15 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
 
-// Conditional Sentry import with error handling for React 19 compatibility
-let Sentry: typeof import('@sentry/react-native') | null = null;
-
-try {
-  Sentry = require('@sentry/react-native');
-} catch (error) {
-  console.warn('Sentry failed to load in ErrorBoundary (this is expected with React 19):', error);
-}
-
 interface Props {
   children: ReactNode;
 }
@@ -39,17 +30,6 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error to Sentry if available
-    if (Sentry) {
-      Sentry.captureException(error, {
-        contexts: {
-          react: {
-            componentStack: errorInfo.componentStack,
-          },
-        },
-      });
-    }
-
     // Log to console in development
     if (__DEV__) {
       console.error('Error Boundary caught an error:', error, errorInfo);

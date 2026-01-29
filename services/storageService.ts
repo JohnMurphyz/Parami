@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserPreferences, STORAGE_KEYS } from '../types';
+import { UserPreferences, STORAGE_KEYS, JournalEntry, Favorite, HistoryEntry, QuizResult, QuizResponse } from '../types';
 import {
   initializeQueue,
   getNextParamiFromQueue,
@@ -267,8 +267,447 @@ export async function togglePracticeChecked(
     }
 
     await savePreferences(preferences);
+
+    // Update history when practice is checked
+    await updateHistoryEntry(paramiId);
   } catch (error) {
     logger.error('Error toggling practice checked:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
+// JOURNAL ENTRIES
+// ============================================================================
+
+/**
+ * Load all journal entries
+ */
+export async function loadJournalEntries(): Promise<JournalEntry[]> {
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.JOURNAL_ENTRIES);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    logger.error('Error loading journal entries:', error);
+    return [];
+  }
+}
+
+/**
+ * Save journal entry
+ */
+export async function saveJournalEntry(
+  paramiId: number,
+  content: string
+): Promise<JournalEntry> {
+  try {
+    const entries = await loadJournalEntries();
+    const today = getLocalDateString();
+    const now = new Date().toISOString();
+
+    // Check if entry exists for today and this Parami
+    const existingIndex = entries.findIndex(
+      (e) => e.date === today && e.paramiId === paramiId
+    );
+
+    let entry: JournalEntry;
+
+    if (existingIndex > -1) {
+      // Update existing entry
+      entry = {
+        ...entries[existingIndex],
+        content,
+        updatedAt: now,
+      };
+      entries[existingIndex] = entry;
+    } else {
+      // Create new entry
+      entry = {
+        id: `journal_${now}_${paramiId}`,
+        paramiId,
+        date: today,
+        content,
+        createdAt: now,
+        updatedAt: now,
+      };
+      entries.push(entry);
+    }
+
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.JOURNAL_ENTRIES,
+      JSON.stringify(entries)
+    );
+
+    // Update history
+    await updateHistoryEntry(paramiId);
+
+    return entry;
+  } catch (error) {
+    logger.error('Error saving journal entry:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get journal entry for a specific date and Parami
+ */
+export async function getJournalEntry(
+  paramiId: number,
+  date?: string
+): Promise<JournalEntry | undefined> {
+  try {
+    const entries = await loadJournalEntries();
+    const targetDate = date || getLocalDateString();
+    return entries.find((e) => e.date === targetDate && e.paramiId === paramiId);
+  } catch (error) {
+    logger.error('Error getting journal entry:', error);
+    return undefined;
+  }
+}
+
+/**
+ * Delete journal entry
+ */
+export async function deleteJournalEntry(entryId: string): Promise<void> {
+  try {
+    const entries = await loadJournalEntries();
+    const filtered = entries.filter((e) => e.id !== entryId);
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.JOURNAL_ENTRIES,
+      JSON.stringify(filtered)
+    );
+  } catch (error) {
+    logger.error('Error deleting journal entry:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
+// FAVORITES
+// ============================================================================
+
+/**
+ * Load all favorites
+ */
+export async function loadFavorites(): Promise<Favorite[]> {
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.FAVORITES);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    logger.error('Error loading favorites:', error);
+    return [];
+  }
+}
+
+/**
+ * Add item to favorites
+ */
+export async function addToFavorites(
+  type: 'practice' | 'quote',
+  paramiId: number,
+  itemId: string
+): Promise<Favorite> {
+  try {
+    const favorites = await loadFavorites();
+    const now = new Date().toISOString();
+
+    const favorite: Favorite = {
+      id: `favorite_${now}_${type}_${itemId}`,
+      type,
+      paramiId,
+      itemId,
+      addedAt: now,
+    };
+
+    favorites.push(favorite);
+    await AsyncStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
+
+    return favorite;
+  } catch (error) {
+    logger.error('Error adding to favorites:', error);
+    throw error;
+  }
+}
+
+/**
+ * Remove item from favorites
+ */
+export async function removeFromFavorites(favoriteId: string): Promise<void> {
+  try {
+    const favorites = await loadFavorites();
+    const filtered = favorites.filter((f) => f.id !== favoriteId);
+    await AsyncStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(filtered));
+  } catch (error) {
+    logger.error('Error removing from favorites:', error);
+    throw error;
+  }
+}
+
+/**
+ * Check if item is favorited
+ */
+export async function isFavorited(
+  type: 'practice' | 'quote',
+  itemId: string
+): Promise<boolean> {
+  try {
+    const favorites = await loadFavorites();
+    return favorites.some((f) => f.type === type && f.itemId === itemId);
+  } catch (error) {
+    logger.error('Error checking if favorited:', error);
+    return false;
+  }
+}
+
+/**
+ * Get favorite by type and item ID
+ */
+export async function getFavorite(
+  type: 'practice' | 'quote',
+  itemId: string
+): Promise<Favorite | undefined> {
+  try {
+    const favorites = await loadFavorites();
+    return favorites.find((f) => f.type === type && f.itemId === itemId);
+  } catch (error) {
+    logger.error('Error getting favorite:', error);
+    return undefined;
+  }
+}
+
+// ============================================================================
+// HISTORY & STREAKS
+// ============================================================================
+
+/**
+ * Load all history entries
+ */
+export async function loadHistory(): Promise<HistoryEntry[]> {
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.HISTORY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    logger.error('Error loading history:', error);
+    return [];
+  }
+}
+
+/**
+ * Update or create history entry for today
+ */
+export async function updateHistoryEntry(paramiId: number): Promise<void> {
+  try {
+    const history = await loadHistory();
+    const today = getLocalDateString();
+    const now = new Date().toISOString();
+
+    const existingIndex = history.findIndex((h) => h.date === today);
+    const preferences = await loadPreferences();
+    const practicesCompleted = preferences.checkedPractices?.[paramiId] || [];
+    const journalEntries = await loadJournalEntries();
+    const hasJournalEntry = journalEntries.some(
+      (j) => j.date === today && j.paramiId === paramiId
+    );
+
+    if (existingIndex > -1) {
+      // Update existing entry
+      history[existingIndex] = {
+        ...history[existingIndex],
+        practicesCompleted,
+        hasJournalEntry,
+      };
+    } else {
+      // Create new entry
+      const entry: HistoryEntry = {
+        date: today,
+        paramiId,
+        practicesCompleted,
+        hasJournalEntry,
+        visitedAt: now,
+      };
+      history.push(entry);
+    }
+
+    await AsyncStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
+
+    // Update streak
+    await updateStreak();
+  } catch (error) {
+    logger.error('Error updating history entry:', error);
+    throw error;
+  }
+}
+
+/**
+ * Calculate and update user's streak
+ */
+export async function updateStreak(): Promise<void> {
+  try {
+    const preferences = await loadPreferences();
+    const history = await loadHistory();
+    const today = getLocalDateString();
+
+    // Sort history by date descending
+    const sortedHistory = history.sort((a, b) => b.date.localeCompare(a.date));
+
+    let currentStreak = 0;
+    let checkDate = new Date();
+
+    // Count consecutive days from today backwards
+    for (let i = 0; i < sortedHistory.length; i++) {
+      const expectedDate = toLocalDateString(checkDate);
+      const entry = sortedHistory.find((h) => h.date === expectedDate);
+
+      if (entry) {
+        currentStreak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    // Update preferences
+    preferences.currentStreak = currentStreak;
+    preferences.longestStreak = Math.max(
+      currentStreak,
+      preferences.longestStreak || 0
+    );
+    preferences.lastVisitDate = today;
+
+    await savePreferences(preferences);
+  } catch (error) {
+    logger.error('Error updating streak:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get current streak
+ */
+export async function getCurrentStreak(): Promise<number> {
+  try {
+    const preferences = await loadPreferences();
+    return preferences.currentStreak || 0;
+  } catch (error) {
+    logger.error('Error getting current streak:', error);
+    return 0;
+  }
+}
+
+/**
+ * Get longest streak
+ */
+export async function getLongestStreak(): Promise<number> {
+  try {
+    const preferences = await loadPreferences();
+    return preferences.longestStreak || 0;
+  } catch (error) {
+    logger.error('Error getting longest streak:', error);
+    return 0;
+  }
+}
+
+// ==========================================
+// The Crossing Over Diagnostic Results
+// ==========================================
+
+/**
+ * Load all quiz results
+ */
+export async function loadQuizResults(): Promise<QuizResult[]> {
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.QUIZ_RESULTS);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    logger.error('Error loading quiz results:', error);
+    return [];
+  }
+}
+
+/**
+ * Save a new quiz result
+ */
+export async function saveQuizResult(responses: QuizResponse[]): Promise<QuizResult> {
+  try {
+    const results = await loadQuizResults();
+    const now = new Date().toISOString();
+    const today = getLocalDateString();
+
+    // Calculate scores using the scoring utility
+    const { calculateAllScores } = await import('../utils/quizScoring');
+    const scores = calculateAllScores(responses);
+
+    const newResult: QuizResult = {
+      id: `quiz_${now}`,
+      date: today,
+      completedAt: now,
+      responses,
+      scores,
+    };
+
+    results.push(newResult);
+
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.QUIZ_RESULTS,
+      JSON.stringify(results)
+    );
+
+    // Update preferences
+    await updatePreference('hasCompletedDiagnosticQuiz', true);
+    await updatePreference('lastQuizDate', today);
+
+    logger.info('Quiz result saved successfully:', newResult.id);
+    return newResult;
+  } catch (error) {
+    logger.error('Error saving quiz result:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get most recent quiz result
+ */
+export async function getMostRecentQuizResult(): Promise<QuizResult | undefined> {
+  try {
+    const results = await loadQuizResults();
+    if (results.length === 0) return undefined;
+
+    return results.sort((a, b) =>
+      b.completedAt.localeCompare(a.completedAt)
+    )[0];
+  } catch (error) {
+    logger.error('Error getting recent quiz result:', error);
+    return undefined;
+  }
+}
+
+/**
+ * Get quiz result by ID
+ */
+export async function getQuizResultById(id: string): Promise<QuizResult | undefined> {
+  try {
+    const results = await loadQuizResults();
+    return results.find((r) => r.id === id);
+  } catch (error) {
+    logger.error('Error getting quiz result by ID:', error);
+    return undefined;
+  }
+}
+
+/**
+ * Delete a quiz result by ID
+ */
+export async function deleteQuizResult(id: string): Promise<void> {
+  try {
+    const results = await loadQuizResults();
+    const filtered = results.filter((r) => r.id !== id);
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.QUIZ_RESULTS,
+      JSON.stringify(filtered)
+    );
+    logger.info('Quiz result deleted:', id);
+  } catch (error) {
+    logger.error('Error deleting quiz result:', error);
     throw error;
   }
 }

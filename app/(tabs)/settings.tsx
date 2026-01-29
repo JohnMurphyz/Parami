@@ -4,6 +4,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { router } from 'expo-router';
 import { loadPreferences, updatePreference } from '../../services/storageService';
 import { scheduleNotification, cancelAllNotifications } from '../../services/notificationService';
+import { isContentReady } from '../../services/firebaseContentService';
 import { formatTimeDisplay, timeStringToDate } from '../../utils/dateUtils';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
@@ -45,7 +46,27 @@ export default function SettingsScreen() {
       await updatePreference('notificationsEnabled', value);
 
       if (value) {
-        await scheduleNotification(notificationTime);
+        // Check if content is ready
+        if (!isContentReady()) {
+          Alert.alert(
+            'Content Loading',
+            'Content is still loading. Notifications will be scheduled automatically when ready.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
+
+        const result = await scheduleNotification(notificationTime);
+        if (!result.success) {
+          // Revert toggle on failure
+          setNotificationsEnabled(false);
+          await updatePreference('notificationsEnabled', false);
+          Alert.alert(
+            'Notification Error',
+            result.error || 'Unable to schedule notifications. Please try again.',
+            [{ text: 'OK' }]
+          );
+        }
       } else {
         await cancelAllNotifications();
       }
@@ -93,7 +114,23 @@ export default function SettingsScreen() {
     await updatePreference('notificationTime', timeString);
 
     if (notificationsEnabled) {
-      await scheduleNotification(timeString);
+      if (!isContentReady()) {
+        Alert.alert(
+          'Content Loading',
+          'Content is still loading. Notifications will be scheduled with the new time when ready.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
+      const result = await scheduleNotification(timeString);
+      if (!result.success) {
+        Alert.alert(
+          'Notification Error',
+          result.error || 'Unable to update notification time. Please try again.',
+          [{ text: 'OK' }]
+        );
+      }
     }
   };
 

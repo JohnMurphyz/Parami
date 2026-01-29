@@ -11,7 +11,7 @@ module.exports = {
     splash: {
       image: "./assets/splash-icon.png",
       resizeMode: "contain",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#3d4e3a"
     },
     ios: {
       supportsTablet: true,
@@ -69,7 +69,6 @@ module.exports = {
       eas: {
         projectId: "9fc0324d-bbf1-4199-bea9-08902a3873d0"
       },
-      sentryDsn: process.env.SENTRY_DSN,
       firebaseApiKey: process.env.FIREBASE_API_KEY,
       firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN,
       firebaseProjectId: process.env.FIREBASE_PROJECT_ID,

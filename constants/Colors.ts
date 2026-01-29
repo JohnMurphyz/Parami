@@ -18,10 +18,17 @@ export const Colors = {
   mediumStone: '#9D9186',
   deepStone: '#635750',
 
+  // Organic variations (handcrafted feel)
+  warmPaper: '#FAF7F0',        // Warmer than warmStone, for journal feel
+  inkBrown: '#3A3330',         // Softer than deepCharcoal
+
   // Transparent variations
   saffronGold08: 'rgba(217, 119, 6, 0.08)',
   saffronGold40: 'rgba(217, 119, 6, 0.4)',
   lotusPink12: 'rgba(232, 155, 155, 0.12)',
   lotusPink40: 'rgba(232, 155, 155, 0.4)',
+  deepMoss08: 'rgba(61, 78, 58, 0.08)',
   deepCharcoal08: 'rgba(43, 37, 32, 0.08)',
+  deepCharcoal02: 'rgba(43, 37, 32, 0.02)',
+  warmStone06: 'rgba(245, 240, 232, 0.6)',
 };

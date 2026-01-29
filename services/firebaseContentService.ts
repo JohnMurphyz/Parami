@@ -49,6 +49,9 @@ export async function initializeContent(): Promise<void> {
     if (cachedContent) {
       inMemoryCache = cachedContent;
       logger.info(`Content loaded from cache (version ${cachedContent.version})`);
+
+      // Notify notification service that content is ready
+      await notifyNotificationServiceContentReady();
     } else {
       // No cache exists - use bundled static content as fallback
       logger.warn('No cache found, using bundled static content');
@@ -86,6 +89,9 @@ async function initializeWithStaticContent(): Promise<void> {
   await saveToCache(staticCache);
 
   logger.info('Bundled static content loaded');
+
+  // Notify notification service that content is ready
+  await notifyNotificationServiceContentReady();
 }
 
 /**
@@ -342,4 +348,18 @@ export function getLastFetchTime(): string | null {
  */
 export function isContentReady(): boolean {
   return inMemoryCache !== null;
+}
+
+/**
+ * Notify notification service that content is ready
+ * Uses dynamic import to avoid circular dependency
+ */
+async function notifyNotificationServiceContentReady(): Promise<void> {
+  try {
+    const { notifyContentReady } = await import('./notificationService');
+    notifyContentReady();
+    logger.info('Notification service notified of content readiness');
+  } catch (error) {
+    logger.error('Failed to notify notification service', error);
+  }
 }
