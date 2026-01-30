@@ -12,6 +12,7 @@ import { Typography } from '../../constants/Typography';
 export default function SettingsScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [notificationTime, setNotificationTime] = useState('09:00');
+  const [reflectionMode, setReflectionMode] = useState<'simplified' | 'detailed'>('simplified');
   const [loading, setLoading] = useState(true);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [tempTime, setTempTime] = useState(new Date());
@@ -25,6 +26,7 @@ export default function SettingsScreen() {
       const preferences = await loadPreferences();
       setNotificationsEnabled(preferences.notificationsEnabled);
       setNotificationTime(preferences.notificationTime);
+      setReflectionMode(preferences.reflectionMode || 'simplified');
 
       // Convert time string to Date object
       setTempTime(timeStringToDate(preferences.notificationTime));
@@ -131,6 +133,22 @@ export default function SettingsScreen() {
           [{ text: 'OK' }]
         );
       }
+    }
+  };
+
+  const handleReflectionModeToggle = async (value: boolean) => {
+    try {
+      const mode = value ? 'detailed' : 'simplified';
+      setReflectionMode(mode);
+      await updatePreference('reflectionMode', mode);
+    } catch (error) {
+      // Revert toggle on failure
+      setReflectionMode(value ? 'simplified' : 'detailed');
+      Alert.alert(
+        'Settings Error',
+        'Unable to update reflection mode. Please try again.',
+        [{ text: 'OK' }]
+      );
     }
   };
 
@@ -241,6 +259,38 @@ export default function SettingsScreen() {
               )}
             </>
           )}
+        </View>
+
+        {/* Reflection Preferences Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Reflection Preferences</Text>
+
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Detailed Reflection Mode</Text>
+              <Text style={styles.settingDescription}>
+                {reflectionMode === 'detailed'
+                  ? '7-section deep reflection (20-30 min)'
+                  : '3-section simplified reflection (10-15 min)'}
+              </Text>
+            </View>
+            <Switch
+              value={reflectionMode === 'detailed'}
+              onValueChange={handleReflectionModeToggle}
+              trackColor={{ false: Colors.softAsh, true: Colors.saffronGold }}
+              thumbColor={Colors.pureWhite}
+              ios_backgroundColor={Colors.softAsh}
+            />
+          </View>
+
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>
+              <Text style={styles.infoBold}>Simplified:</Text> 3 sections covering Mind & Intention, Experience & Response, and Integration.
+            </Text>
+            <Text style={styles.infoText}>
+              <Text style={styles.infoBold}>Detailed:</Text> 7 sections with comprehensive tracking of ego patterns, mental cultivation, nutriments, vicissitudes, and disappointment.
+            </Text>
+          </View>
         </View>
 
         {/* About Section */}
@@ -373,6 +423,24 @@ const styles = StyleSheet.create({
     ...Typography.h3,
     color: Colors.pureWhite,
     fontWeight: '700',
+  },
+  infoBox: {
+    backgroundColor: Colors.saffronGold08,
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 12,
+    gap: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.saffronGold,
+  },
+  infoText: {
+    ...Typography.body,
+    color: Colors.deepStone,
+    lineHeight: 20,
+  },
+  infoBold: {
+    fontWeight: '700',
+    color: Colors.deepCharcoal,
   },
   infoCard: {
     backgroundColor: Colors.pureWhite,

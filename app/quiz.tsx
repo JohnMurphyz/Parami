@@ -5,8 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { QUIZ_QUESTIONS } from '../data/quizQuestions';
 import { QuizResponse } from '../types';
 import { saveQuizResult } from '../services/storageService';
-import QuizProgressBar from '../components/QuizProgressBar';
-import QuizQuestionCard from '../components/QuizQuestionCard';
+import QuizProgressBar from '../components/quiz/QuizProgressBar';
+import QuizQuestionCard from '../components/quiz/QuizQuestionCard';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
 

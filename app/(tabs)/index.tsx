@@ -8,9 +8,9 @@ import { getParamiById, getExpandedPractices } from '../../services/firebaseCont
 import { getAvailablePractices, getNextPractice, hasMorePractices, getTotalPracticeCount } from '../../services/contentService';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
-import ParamiHeroCard from '../../components/ParamiHeroCard';
-import PracticeCard from '../../components/PracticeCard';
-import WizardModal from '../../components/WizardModal';
+import ParamiHeroCard from '../../components/parami/ParamiHeroCard';
+import PracticeCard from '../../components/practice/PracticeCard';
+import WizardModal from '../../components/practice/WizardModal';
 import {
   getTodayParamiId,
   shuffleToNextParami,

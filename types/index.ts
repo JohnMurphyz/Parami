@@ -74,6 +74,7 @@ export interface UserPreferences {
   lastVisitDate?: string; // ISO date string of last app visit (for streak tracking)
   hasCompletedDiagnosticQuiz?: boolean; // Whether user has completed The Crossing Over Diagnostic
   lastQuizDate?: string; // ISO date string of last diagnostic completion
+  reflectionMode?: 'simplified' | 'detailed'; // Reflection mode preference (default: 'simplified')
 }
 
 // Firebase content metadata
@@ -235,8 +236,11 @@ export interface StructuredReflection {
   overallReflection: string;    // Summary/closing thoughts
 }
 
+// Import simplified reflection types
+import { SimplifiedReflection } from './simplifiedReflection';
+
 // Union type for all entries
-export type ReflectionEntry = StructuredReflection | JournalEntry;
+export type ReflectionEntry = SimplifiedReflection | StructuredReflection | JournalEntry;
 
 // Storage keys
 export const STORAGE_KEYS = {

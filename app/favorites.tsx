@@ -13,8 +13,8 @@ import { getAvailablePractices } from '../services/contentService';
 import { Favorite, Practice } from '../types';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
-import ScreenHeader from '../components/ScreenHeader';
-import ParamiFilterDropdown from '../components/ParamiFilterDropdown';
+import ScreenHeader from '../components/common/ScreenHeader';
+import ParamiFilterDropdown from '../components/parami/ParamiFilterDropdown';
 
 interface QuoteFavoriteProps {
   favorite: Favorite;

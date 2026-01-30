@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Parami } from '../../types';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
-import ParamiHeroCard from '../ParamiHeroCard';
+import ParamiHeroCard from '../parami/ParamiHeroCard';
 
 interface WizardScreen1Props {
   parami: Parami;

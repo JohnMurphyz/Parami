@@ -7,12 +7,12 @@ import { calculateAnalytics, AnalyticsSummary } from '../utils/reflectionAnalyti
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
 import { logger } from '../utils/logger';
-import ScreenHeader from '../components/ScreenHeader';
-import EmotionalTimelineChart from '../components/EmotionalTimelineChart';
-import ResilienceMeter from '../components/ResilienceMeter';
-import GardenProgressCard from '../components/GardenProgressCard';
-import EgoPatternInsights from '../components/EgoPatternInsights';
-import SecondArrowTracker from '../components/SecondArrowTracker';
+import ScreenHeader from '../components/common/ScreenHeader';
+import EmotionalTimelineChart from '../components/reflection/analytics/EmotionalTimelineChart';
+import ResilienceMeter from '../components/reflection/analytics/ResilienceMeter';
+import GardenProgressCard from '../components/reflection/analytics/GardenProgressCard';
+import EgoPatternInsights from '../components/reflection/analytics/EgoPatternInsights';
+import SecondArrowTracker from '../components/reflection/analytics/SecondArrowTracker';
 
 export default function ReflectionAnalyticsScreen() {
   const [loading, setLoading] = useState(true);

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Keyboa
 import { Parami } from '../../types';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
-import PracticeCard from '../PracticeCard';
+import PracticeCard from '../practice/PracticeCard';
 
 interface WizardScreen3Props {
   parami: Parami;

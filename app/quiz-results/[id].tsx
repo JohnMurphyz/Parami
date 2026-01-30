@@ -7,9 +7,9 @@ import { getParamiById } from '../../services/firebaseContentService';
 import { generateInsights, getOverallAssessment, getPersonalizedRecommendation } from '../../utils/quizInsights';
 import { getParamisToDevelop } from '../../utils/quizScoring';
 import { QuizResult } from '../../types';
-import QuizRadarChart from '../../components/QuizRadarChart';
-import ParamiScoreRow from '../../components/ParamiScoreRow';
-import ParamiDetailModal from '../../components/ParamiDetailModal';
+import QuizRadarChart from '../../components/quiz/QuizRadarChart';
+import ParamiScoreRow from '../../components/parami/ParamiScoreRow';
+import ParamiDetailModal from '../../components/parami/ParamiDetailModal';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
 

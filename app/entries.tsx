@@ -8,10 +8,11 @@ import { getParamiById } from '../services/firebaseContentService';
 import { ReflectionEntry, StructuredReflection } from '../types';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
-import ScreenHeader from '../components/ScreenHeader';
-import ParamiFilterDropdown from '../components/ParamiFilterDropdown';
-import StructuredEntryCard from '../components/StructuredEntryCard';
-import StructuredEntryDetailModal from '../components/StructuredEntryDetailModal';
+import { logger } from '../utils/logger';
+import ScreenHeader from '../components/common/ScreenHeader';
+import ParamiFilterDropdown from '../components/parami/ParamiFilterDropdown';
+import StructuredEntryCard from '../components/reflection/cards/StructuredEntryCard';
+import StructuredEntryDetailModal from '../components/reflection/modals/StructuredEntryDetailModal';
 
 type EntryTypeFilter = 'all' | 'quick' | 'deep';
 
@@ -41,7 +42,7 @@ export default function EntriesScreen() {
       // Sort by most recent (already sorted by loadAllReflectionEntries)
       setEntries(allEntries);
     } catch (error) {
-      console.error('Error loading entries:', error);
+      logger.error('Error loading entries', error);
     } finally {
       setLoading(false);
     }

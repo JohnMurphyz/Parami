@@ -2,7 +2,9 @@ import {
   StructuredReflection,
   EmotionalState,
   ResilienceLevel,
+  ReflectionEntry,
 } from '../types';
+import { batchToAnalyticsFormat } from './reflectionMigration';
 
 /**
  * Emotional trend data point
@@ -66,29 +68,39 @@ export interface AnalyticsSummary {
 
 /**
  * Calculate comprehensive analytics from structured reflections
+ * Handles both SimplifiedReflection and StructuredReflection types
  */
 export function calculateAnalytics(
-  reflections: StructuredReflection[]
+  reflections: ReflectionEntry[]
 ): AnalyticsSummary | null {
   if (reflections.length === 0) {
     return null;
   }
 
+  // Filter out unstructured journal entries and map simplified reflections to structured format
+  const structuredReflections = reflections
+    .filter(r => r.type === 'simplified' || r.type === 'structured')
+    .map(r => batchToAnalyticsFormat([r as any])[0]);
+
+  if (structuredReflections.length === 0) {
+    return null;
+  }
+
   // Sort by date (oldest first for trend analysis)
-  const sorted = [...reflections].sort((a, b) => a.date.localeCompare(b.date));
+  const sorted = [...structuredReflections].sort((a, b) => a.date.localeCompare(b.date));
 
   return {
-    totalReflections: reflections.length,
+    totalReflections: structuredReflections.length,
     dateRange: {
       earliest: sorted[0].date,
       latest: sorted[sorted.length - 1].date,
     },
     emotionalTrends: calculateEmotionalTrends(sorted),
-    mostCommonEmotion: calculateMostCommonEmotion(reflections),
-    averageResilience: calculateAverageResilience(reflections),
+    mostCommonEmotion: calculateMostCommonEmotion(structuredReflections),
+    averageResilience: calculateAverageResilience(structuredReflections),
     resilienceTrend: calculateResilienceTrend(sorted),
-    gardenProgress: calculateGardenProgress(reflections),
-    egoPatterns: calculateEgoPatterns(reflections),
+    gardenProgress: calculateGardenProgress(structuredReflections),
+    egoPatterns: calculateEgoPatterns(structuredReflections),
     secondArrowStats: calculateSecondArrowStats(sorted),
   };
 }

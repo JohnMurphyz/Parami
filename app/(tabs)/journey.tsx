@@ -18,8 +18,8 @@ import { getAvailablePractices } from '../../services/contentService';
 import { HistoryEntry, JournalEntry, Favorite, Practice } from '../../types';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
-import DailyReflectionCard from '../../components/DailyReflectionCard';
-import ExpandableHistoryCard from '../../components/ExpandableHistoryCard';
+import DailyReflectionCard from '../../components/reflection/cards/DailyReflectionCard';
+import ExpandableHistoryCard from '../../components/common/ExpandableHistoryCard';
 
 export default function JourneyScreen() {
   const [loading, setLoading] = useState(true);
@@ -247,6 +247,26 @@ export default function JourneyScreen() {
               <Text style={styles.statLabel}>Saved</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Analytics Card - Full Width */}
+          <TouchableOpacity
+            style={styles.analyticsCard}
+            onPress={() => router.push('/reflection-analytics')}
+            activeOpacity={0.7}
+            accessibilityLabel="View reflection analytics"
+            accessibilityRole="button"
+          >
+            <View style={styles.analyticsIcon}>
+              <Ionicons name="analytics" size={28} color={Colors.saffronGold} />
+            </View>
+            <View style={styles.analyticsContent}>
+              <Text style={styles.analyticsTitle}>Reflection Analytics</Text>
+              <Text style={styles.analyticsDescription}>
+                View your emotional patterns, resilience trends, and spiritual insights
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={Colors.mediumStone} />
+          </TouchableOpacity>
         </View>
 
         {/* The Crossing Over Diagnostic Section */}
@@ -409,6 +429,44 @@ const styles = StyleSheet.create({
     color: Colors.mediumStone,
     textAlign: 'center',
     lineHeight: 24,
+  },
+  analyticsCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    backgroundColor: Colors.saffronGold08,
+    borderRadius: 16,
+    padding: 20,
+    marginTop: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.saffronGold,
+    shadowColor: Colors.deepCharcoal,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  analyticsIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Colors.pureWhite,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  analyticsContent: {
+    flex: 1,
+    gap: 4,
+  },
+  analyticsTitle: {
+    ...Typography.h3,
+    color: Colors.deepCharcoal,
+  },
+  analyticsDescription: {
+    ...Typography.caption,
+    color: Colors.deepStone,
+    fontSize: 13,
+    lineHeight: 18,
   },
   quizSection: {
     marginBottom: 32,

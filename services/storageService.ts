@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserPreferences, STORAGE_KEYS, JournalEntry, Favorite, HistoryEntry, QuizResult, QuizResponse } from '../types';
+import { UserPreferences, STORAGE_KEYS, JournalEntry, Favorite, HistoryEntry, QuizResult, QuizResponse, ReflectionEntry } from '../types';
+import { SimplifiedReflection } from '../types/simplifiedReflection';
 import {
   initializeQueue,
   getNextParamiFromQueue,
@@ -748,12 +749,15 @@ export async function migrateJournalEntries(): Promise<void> {
 }
 
 /**
- * Load all structured reflections
+ * Load all reflections (both SimplifiedReflection and StructuredReflection)
+ * Returns all reflection types for analytics compatibility
  */
-export async function loadStructuredReflections(): Promise<import('../types').StructuredReflection[]> {
+export async function loadStructuredReflections(): Promise<ReflectionEntry[]> {
   try {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.STRUCTURED_REFLECTIONS);
-    return data ? JSON.parse(data) : [];
+    const reflections: ReflectionEntry[] = data ? JSON.parse(data) : [];
+    // Filter out journal entries (type 'unstructured') - only return structured and simplified
+    return reflections.filter(r => r.type === 'structured' || r.type === 'simplified');
   } catch (error) {
     logger.error('Error loading structured reflections', error);
     return [];
@@ -795,6 +799,73 @@ export async function saveStructuredReflection(
     return updated;
   } catch (error) {
     logger.error('Error saving structured reflection', error);
+    throw error;
+  }
+}
+
+/**
+ * Save or update a simplified reflection
+ * Supports partial saves (resume later)
+ */
+export async function saveSimplifiedReflection(
+  reflection: SimplifiedReflection
+): Promise<SimplifiedReflection> {
+  try {
+    const all = await loadStructuredReflections();
+    const existingIndex = all.findIndex((r) => r.id === reflection.id);
+
+    const updated = {
+      ...reflection,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (existingIndex >= 0) {
+      all[existingIndex] = updated;
+      logger.info('Updated simplified reflection', { id: reflection.id });
+    } else {
+      all.push(updated);
+      logger.info('Created new simplified reflection', { id: reflection.id });
+    }
+
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.STRUCTURED_REFLECTIONS,
+      JSON.stringify(all)
+    );
+
+    // Update history entry to mark hasJournalEntry
+    await updateHistoryEntry(reflection.paramiId);
+
+    return updated;
+  } catch (error) {
+    logger.error('Error saving simplified reflection', error);
+    throw error;
+  }
+}
+
+/**
+ * Get today's simplified reflection (or create new one)
+ */
+export async function getTodaySimplifiedReflection(
+  paramiId: number
+): Promise<SimplifiedReflection> {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const all = await loadStructuredReflections();
+    const existing = all.find((r) => r.date === today && r.paramiId === paramiId && r.type === 'simplified') as SimplifiedReflection;
+
+    if (existing) {
+      logger.info('Found existing simplified reflection for today', { id: existing.id });
+      return existing;
+    }
+
+    // Create new simplified reflection using helper
+    const { createEmptySimplifiedReflection } = await import('../types/simplifiedReflection');
+    const newReflection = createEmptySimplifiedReflection(paramiId);
+
+    logger.info('Created new simplified reflection for today', { id: newReflection.id });
+    return newReflection;
+  } catch (error) {
+    logger.error('Error getting today simplified reflection', error);
     throw error;
   }
 }

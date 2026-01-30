@@ -9,7 +9,7 @@ import { getStrongestParamis, getParamisToDevelop } from '../utils/quizScoring';
 import { QuizResult } from '../types';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
-import ScreenHeader from '../components/ScreenHeader';
+import ScreenHeader from '../components/common/ScreenHeader';
 
 export default function QuizHistoryScreen() {
   const [results, setResults] = useState<QuizResult[]>([]);
