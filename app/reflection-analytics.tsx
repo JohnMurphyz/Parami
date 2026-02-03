@@ -9,7 +9,6 @@ import { Typography } from '../constants/Typography';
 import { logger } from '../utils/logger';
 import ScreenHeader from '../components/common/ScreenHeader';
 import EmotionalTimelineChart from '../components/reflection/analytics/EmotionalTimelineChart';
-import ResilienceMeter from '../components/reflection/analytics/ResilienceMeter';
 import GardenProgressCard from '../components/reflection/analytics/GardenProgressCard';
 import EgoPatternInsights from '../components/reflection/analytics/EgoPatternInsights';
 import SecondArrowTracker from '../components/reflection/analytics/SecondArrowTracker';
@@ -111,15 +110,6 @@ export default function ReflectionAnalyticsScreen() {
           <EmotionalTimelineChart trends={emotionalTrends} />
         </View>
 
-        {/* Resilience Meter */}
-        <View style={styles.section}>
-          <ResilienceMeter
-            averageResilience={averageResilience}
-            trend={resilienceTrend}
-            totalReflections={totalReflections}
-          />
-        </View>
-
         {/* Garden Progress */}
         <View style={styles.section}>
           <GardenProgressCard gardenProgress={gardenProgress} />
@@ -168,6 +158,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+    paddingTop: 60,
   },
   loadingText: {
     ...Typography.body,

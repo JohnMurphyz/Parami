@@ -2,11 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StructuredReflection, EmotionalState } from '../../../types';
+import { SimplifiedReflection } from '../../../types/simplifiedReflection';
 import { Colors } from '../../../constants/Colors';
 import { Typography } from '../../../constants/Typography';
 
 interface StructuredEntryCardProps {
-  entry: StructuredReflection;
+  entry: StructuredReflection | SimplifiedReflection;
   paramiName: string;
   onPress: () => void;
 }
@@ -50,7 +51,13 @@ export default function StructuredEntryCard({
   paramiName,
   onPress,
 }: StructuredEntryCardProps) {
-  const emotionalDisplay = EMOTIONAL_STATE_DISPLAY[entry.emotionalState];
+  // Extract emotional state from the correct location
+  const emotionalState: EmotionalState =
+    entry.type === 'simplified'
+      ? entry.reflectionIntegration?.emotionalState || 'peaceful'
+      : entry.emotionalState || 'peaceful';
+
+  const emotionalDisplay = EMOTIONAL_STATE_DISPLAY[emotionalState];
 
   // Count completed sections
   const completedCount = Object.values(entry.completedSections).filter(Boolean).length;
@@ -66,10 +73,15 @@ export default function StructuredEntryCard({
   });
 
   // Get snippet of overall reflection (first 80 chars)
-  const snippet = entry.overallReflection
-    ? entry.overallReflection.length > 80
-      ? `${entry.overallReflection.substring(0, 80)}...`
-      : entry.overallReflection
+  const overallReflection =
+    entry.type === 'simplified'
+      ? entry.reflectionIntegration?.overallReflection
+      : entry.overallReflection;
+
+  const snippet = overallReflection
+    ? overallReflection.length > 80
+      ? `${overallReflection.substring(0, 80)}...`
+      : overallReflection
     : 'No summary written';
 
   return (
@@ -141,10 +153,6 @@ export default function StructuredEntryCard({
         </View>
       </View>
 
-      {/* Deep Reflection Indicator */}
-      <View style={styles.deepReflectionIndicator}>
-        <Ionicons name="flower" size={12} color={Colors.saffronGold} />
-      </View>
     </TouchableOpacity>
   );
 }
@@ -162,7 +170,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 2,
-    position: 'relative',
   },
   header: {
     flexDirection: 'row',
@@ -259,16 +266,5 @@ const styles = StyleSheet.create({
     color: Colors.mediumStone,
     fontWeight: '600',
     fontSize: 12,
-  },
-  deepReflectionIndicator: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: Colors.saffronGold08,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

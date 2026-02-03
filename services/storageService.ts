@@ -287,7 +287,15 @@ export async function togglePracticeChecked(
 export async function loadJournalEntries(): Promise<JournalEntry[]> {
   try {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.JOURNAL_ENTRIES);
-    return data ? JSON.parse(data) : [];
+    const entries: any[] = data ? JSON.parse(data) : [];
+
+    // Ensure all entries have type field (auto-migration)
+    const withType = entries.map(entry => ({
+      ...entry,
+      type: entry.type || 'unstructured' as const,
+    }));
+
+    return withType as JournalEntry[];
   } catch (error) {
     logger.error('Error loading journal entries:', error);
     return [];
@@ -317,6 +325,7 @@ export async function saveJournalEntry(
       // Update existing entry
       entry = {
         ...entries[existingIndex],
+        type: 'unstructured',
         content,
         updatedAt: now,
       };
@@ -325,6 +334,7 @@ export async function saveJournalEntry(
       // Create new entry
       entry = {
         id: `journal_${now}_${paramiId}`,
+        type: 'unstructured',
         paramiId,
         date: today,
         content,

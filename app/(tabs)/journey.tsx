@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import {
   loadHistory,
   loadJournalEntries,
+  loadAllReflectionEntries,
   loadPreferences,
   loadFavorites,
   getTodayParamiId,
@@ -15,7 +16,7 @@ import {
 } from '../../services/storageService';
 import { getParamiById } from '../../services/firebaseContentService';
 import { getAvailablePractices } from '../../services/contentService';
-import { HistoryEntry, JournalEntry, Favorite, Practice } from '../../types';
+import { HistoryEntry, JournalEntry, ReflectionEntry, Favorite, Practice } from '../../types';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
 import DailyReflectionCard from '../../components/reflection/cards/DailyReflectionCard';
@@ -24,6 +25,7 @@ import ExpandableHistoryCard from '../../components/common/ExpandableHistoryCard
 export default function JourneyScreen() {
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [allEntries, setAllEntries] = useState<ReflectionEntry[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [practiceData, setPracticeData] = useState<Map<string, Practice>>(new Map());
@@ -50,8 +52,9 @@ export default function JourneyScreen() {
       setLoading(true);
 
       // Load all data in parallel
-      const [historyData, journals, favs, currentParamiId] = await Promise.all([
+      const [historyData, allReflections, journals, favs, currentParamiId] = await Promise.all([
         loadHistory(),
+        loadAllReflectionEntries(),
         loadJournalEntries(),
         loadFavorites(),
         getTodayParamiId(),
@@ -59,6 +62,7 @@ export default function JourneyScreen() {
 
       console.log('Journey data loaded:', {
         historyCount: historyData.length,
+        allReflectionsCount: allReflections.length,
         journalsCount: journals.length,
         favoritesCount: favs.length,
         paramiId: currentParamiId,
@@ -99,6 +103,7 @@ export default function JourneyScreen() {
       });
       setHistory(sortedHistory);
 
+      setAllEntries(allReflections);
       setJournalEntries(journals);
 
       // Sort favorites safely
@@ -130,6 +135,7 @@ export default function JourneyScreen() {
       setTodayParamiId(1);
       // Set empty data to prevent crashes
       setHistory([]);
+      setAllEntries([]);
       setJournalEntries([]);
       setFavorites([]);
       setPracticeData(new Map());
@@ -227,7 +233,7 @@ export default function JourneyScreen() {
               activeOpacity={0.7}
             >
               <Ionicons name="book" size={24} color={Colors.lotusPink} />
-              <Text style={styles.statNumber}>{journalEntries.length}</Text>
+              <Text style={styles.statNumber}>{allEntries.length}</Text>
               <Text style={styles.statLabel}>Entries</Text>
             </TouchableOpacity>
 
@@ -300,44 +306,7 @@ export default function JourneyScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* History - Expandable Cards */}
-        <View style={styles.historySection}>
-          <Text style={styles.sectionTitle}>Your Journey</Text>
 
-          {history.length === 0 ? (
-            <View style={styles.emptyState}>
-              <View style={styles.emptyIllustration}>
-                <Ionicons name="leaf-outline" size={32} color={Colors.deepMoss} style={{ marginBottom: 8 }} />
-                <Ionicons name="water-outline" size={28} color={Colors.saffronGold} style={{ opacity: 0.6 }} />
-              </View>
-              <Text style={styles.emptyStateTitle}>A journey of ten thousand miles...</Text>
-              <Text style={styles.emptyStateText}>
-                Your first practice will appear here. Check off a practice today to mark the beginning.
-              </Text>
-            </View>
-          ) : (
-            history.map((entry, index) => {
-              const parami = getParamiById(entry.paramiId);
-              if (!parami) return null;
-
-              const journalForDay = journalEntries.find(
-                (j) => j.date === entry.date && j.paramiId === entry.paramiId
-              );
-
-              return (
-                <ExpandableHistoryCard
-                  key={entry.date}
-                  entry={entry}
-                  journalEntry={journalForDay}
-                  parami={parami}
-                  isExpanded={expandedDates.has(entry.date)}
-                  onToggleExpand={() => handleToggleExpand(entry.date)}
-                  index={index}
-                />
-              );
-            })
-          )}
-        </View>
       </View>
     </ScrollView>
   );

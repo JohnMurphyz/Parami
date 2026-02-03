@@ -17,17 +17,18 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 import { StructuredReflection, EmotionalState, ResilienceLevel } from '../../../types';
+import { SimplifiedReflection } from '../../../types/simplifiedReflection';
 import { Colors } from '../../../constants/Colors';
 import { Typography } from '../../../constants/Typography';
 
 interface StructuredEntryDetailModalProps {
   visible: boolean;
-  entry: StructuredReflection | null;
+  entry: StructuredReflection | SimplifiedReflection | null;
   paramiName: string;
   onClose: () => void;
 }
 
-type SectionKey = 'egoAudit' | 'gardenLog' | 'nutrimentAudit' | 'vicissitudes' | 'disappointment';
+type SectionKey = 'egoAudit' | 'gardenLog' | 'nutrimentAudit' | 'vicissitudes' | 'disappointment' | 'mindIntention' | 'experienceResponse' | 'essentialQuestions';
 
 const EMOTIONAL_STATE_LABELS: Record<EmotionalState, string> = {
   peaceful: 'Peaceful',
@@ -52,6 +53,18 @@ export default function StructuredEntryDetailModal({
   const [expandedSections, setExpandedSections] = useState<Set<SectionKey>>(new Set());
 
   if (!entry) return null;
+
+  // Extract data based on entry type
+  const isSimplified = entry.type === 'simplified';
+  const emotionalState = isSimplified
+    ? entry.reflectionIntegration?.emotionalState || 'peaceful'
+    : entry.emotionalState || 'peaceful';
+  const resilienceLevel = isSimplified
+    ? entry.reflectionIntegration?.resilienceLevel || 'stable'
+    : entry.resilienceLevel || 'stable';
+  const overallReflection = isSimplified
+    ? entry.reflectionIntegration?.overallReflection
+    : entry.overallReflection;
 
   const toggleSection = (section: SectionKey) => {
     // Configure smooth animation
@@ -107,7 +120,9 @@ export default function StructuredEntryDetailModal({
           </TouchableOpacity>
 
           <View style={styles.headerContent}>
-            <Text style={styles.headerTitle}>Deep Reflection</Text>
+            <Text style={styles.headerTitle}>
+              {isSimplified ? 'Simplified Reflection' : 'Detailed Reflection'}
+            </Text>
             <Text style={styles.headerSubtitle}>{formattedDate}</Text>
           </View>
         </View>
@@ -124,28 +139,126 @@ export default function StructuredEntryDetailModal({
               <View style={styles.emotionalItem}>
                 <Text style={styles.emotionalLabel}>Emotional State</Text>
                 <Text style={styles.emotionalValue}>
-                  {EMOTIONAL_STATE_LABELS[entry.emotionalState]}
+                  {EMOTIONAL_STATE_LABELS[emotionalState]}
                 </Text>
               </View>
               <View style={styles.emotionalItem}>
                 <Text style={styles.emotionalLabel}>Resilience</Text>
                 <Text style={styles.emotionalValue}>
-                  {RESILIENCE_LABELS[entry.resilienceLevel]}
+                  {RESILIENCE_LABELS[resilienceLevel]}
                 </Text>
               </View>
             </View>
           </View>
 
           {/* Overall Reflection */}
-          {entry.overallReflection && (
+          {overallReflection && (
             <View style={styles.overallReflectionCard}>
               <Text style={styles.overallReflectionTitle}>Overall Reflection</Text>
-              <Text style={styles.overallReflectionText}>{entry.overallReflection}</Text>
+              <Text style={styles.overallReflectionText}>{overallReflection}</Text>
             </View>
           )}
 
-          {/* Section 1: Ego Audit */}
-          {entry.egoAudit && (
+          {/* Simplified Reflection Sections */}
+          {isSimplified && entry.mindIntention && (
+            <AccordionSection
+              title="Mind & Intention"
+              icon="aperture-outline"
+              isExpanded={expandedSections.has('mindIntention' as SectionKey)}
+              onToggle={() => toggleSection('mindIntention' as SectionKey)}
+            >
+              <View style={styles.sectionContent}>
+                {entry.mindIntention.wholesomeSeeds.length > 0 && (
+                  <DetailItem label="Wholesome Seeds">
+                    <View style={styles.chipList}>
+                      {entry.mindIntention.wholesomeSeeds.map((seed, index) => (
+                        <View key={index} style={[styles.chip, styles.chipWholesome]}>
+                          <Text style={styles.chipText}>{seed}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </DetailItem>
+                )}
+
+                {entry.mindIntention.unwholesomeSeeds.length > 0 && (
+                  <DetailItem label="Unwholesome Seeds">
+                    <View style={styles.chipList}>
+                      {entry.mindIntention.unwholesomeSeeds.map((seed, index) => (
+                        <View key={index} style={[styles.chip, styles.chipUnwholesome]}>
+                          <Text style={styles.chipText}>{seed}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </DetailItem>
+                )}
+
+                {entry.mindIntention.patternsNoticed && (
+                  <DetailItem label="Patterns Noticed">
+                    <Text style={styles.responseText}>{entry.mindIntention.patternsNoticed}</Text>
+                  </DetailItem>
+                )}
+
+                {entry.mindIntention.patternResponse && (
+                  <DetailItem label="Pattern Response">
+                    <Text style={styles.responseText}>{entry.mindIntention.patternResponse}</Text>
+                  </DetailItem>
+                )}
+              </View>
+            </AccordionSection>
+          )}
+
+          {isSimplified && entry.experienceResponse && (
+            <AccordionSection
+              title="Experience & Response"
+              icon="water-outline"
+              isExpanded={expandedSections.has('experienceResponse' as SectionKey)}
+              onToggle={() => toggleSection('experienceResponse' as SectionKey)}
+            >
+              <View style={styles.sectionContent}>
+                {entry.experienceResponse.lifeExperiences.description && (
+                  <DetailItem label="Life Experiences">
+                    <Text style={styles.responseText}>
+                      {entry.experienceResponse.lifeExperiences.description}
+                    </Text>
+                  </DetailItem>
+                )}
+
+                <DetailItem label="Second Arrow">
+                  {entry.experienceResponse.secondArrow.occurred ? (
+                    <>
+                      <CheckedItem text="Occurred - added mental grief to pain" />
+                      {entry.experienceResponse.secondArrow.description && (
+                        <Text style={styles.responseText}>
+                          {entry.experienceResponse.secondArrow.description}
+                        </Text>
+                      )}
+                    </>
+                  ) : (
+                    <Text style={styles.responseText}>Did not occur</Text>
+                  )}
+                </DetailItem>
+
+                {entry.experienceResponse.hardGroundReflection && (
+                  <DetailItem label="Hard Ground Reflection">
+                    <Text style={styles.responseText}>
+                      {entry.experienceResponse.hardGroundReflection}
+                    </Text>
+                  </DetailItem>
+                )}
+
+                {entry.experienceResponse.mentalConsumption && (
+                  <DetailItem label="Mental Consumption">
+                    <Text style={styles.responseText}>
+                      {entry.experienceResponse.mentalConsumption}
+                    </Text>
+                  </DetailItem>
+                )}
+              </View>
+            </AccordionSection>
+          )}
+
+          {/* Structured Reflection Sections */}
+          {!isSimplified && entry.egoAudit && (
             <AccordionSection
               title="The Ego Audit"
               icon="eye-outline"
@@ -183,8 +296,7 @@ export default function StructuredEntryDetailModal({
             </AccordionSection>
           )}
 
-          {/* Section 2: Garden Log */}
-          {entry.gardenLog && (
+          {!isSimplified && entry.gardenLog && (
             <AccordionSection
               title="The Garden Log"
               icon="leaf-outline"
@@ -232,7 +344,7 @@ export default function StructuredEntryDetailModal({
           )}
 
           {/* Section 3: Nutriment Audit */}
-          {entry.nutrimentAudit && (
+          {!isSimplified && entry.nutrimentAudit && (
             <AccordionSection
               title="The Nutriment Audit"
               icon="nutrition-outline"
@@ -285,7 +397,7 @@ export default function StructuredEntryDetailModal({
           )}
 
           {/* Section 4: Vicissitudes */}
-          {entry.vicissitudes && (
+          {!isSimplified && entry.vicissitudes && (
             <AccordionSection
               title="The Vicissitudes of Life"
               icon="swap-horizontal-outline"
@@ -302,19 +414,26 @@ export default function StructuredEntryDetailModal({
                   );
                 })}
 
-                {entry.vicissitudes.secondArrow.occurred && (
-                  <DetailItem label="The Second Arrow">
-                    <Text style={styles.responseText}>
-                      {entry.vicissitudes.secondArrow.description}
-                    </Text>
-                  </DetailItem>
-                )}
+                <DetailItem label="The Second Arrow">
+                  {entry.vicissitudes.secondArrow.occurred ? (
+                    <>
+                      <CheckedItem text="Occurred - added mental grief to pain" />
+                      {entry.vicissitudes.secondArrow.description && (
+                        <Text style={styles.responseText}>
+                          {entry.vicissitudes.secondArrow.description}
+                        </Text>
+                      )}
+                    </>
+                  ) : (
+                    <Text style={styles.responseText}>Did not occur</Text>
+                  )}
+                </DetailItem>
               </View>
             </AccordionSection>
           )}
 
           {/* Section 5: Disappointment */}
-          {entry.disappointment && (
+          {!isSimplified && entry.disappointment && (
             <AccordionSection
               title="The Chariot of Disappointment"
               icon="trending-down-outline"
@@ -347,34 +466,64 @@ export default function StructuredEntryDetailModal({
             </AccordionSection>
           )}
 
-          {/* Daily Prompts */}
-          <View style={styles.dailyPromptsCard}>
-            <Text style={styles.dailyPromptsTitle}>Daily Contemplations</Text>
+          {/* Daily Prompts (Structured) or Essential Questions (Simplified) */}
+          {!isSimplified && entry.dailyPrompts && (
+            <View style={styles.dailyPromptsCard}>
+              <Text style={styles.dailyPromptsTitle}>Daily Contemplations</Text>
 
-            {entry.dailyPrompts.selfReliance && (
-              <DetailItem label="Self-Reliance">
-                <Text style={styles.responseText}>{entry.dailyPrompts.selfReliance}</Text>
-              </DetailItem>
-            )}
+              {entry.dailyPrompts.selfReliance && (
+                <DetailItem label="Self-Reliance">
+                  <Text style={styles.responseText}>{entry.dailyPrompts.selfReliance}</Text>
+                </DetailItem>
+              )}
 
-            {entry.dailyPrompts.nowness && (
-              <DetailItem label="Nowness">
-                <Text style={styles.responseText}>{entry.dailyPrompts.nowness}</Text>
-              </DetailItem>
-            )}
+              {entry.dailyPrompts.nowness && (
+                <DetailItem label="Nowness">
+                  <Text style={styles.responseText}>{entry.dailyPrompts.nowness}</Text>
+                </DetailItem>
+              )}
 
-            {entry.dailyPrompts.nonAttachment && (
-              <DetailItem label="Non-Attachment">
-                <Text style={styles.responseText}>{entry.dailyPrompts.nonAttachment}</Text>
-              </DetailItem>
-            )}
+              {entry.dailyPrompts.nonAttachment && (
+                <DetailItem label="Non-Attachment">
+                  <Text style={styles.responseText}>{entry.dailyPrompts.nonAttachment}</Text>
+                </DetailItem>
+              )}
 
-            {entry.dailyPrompts.clarity && (
-              <DetailItem label="Clarity">
-                <Text style={styles.responseText}>{entry.dailyPrompts.clarity}</Text>
-              </DetailItem>
-            )}
-          </View>
+              {entry.dailyPrompts.clarity && (
+                <DetailItem label="Clarity">
+                  <Text style={styles.responseText}>{entry.dailyPrompts.clarity}</Text>
+                </DetailItem>
+              )}
+            </View>
+          )}
+
+          {/* Essential Questions (Simplified Reflection) */}
+          {isSimplified && entry.reflectionIntegration?.essentialQuestions && (
+            <AccordionSection
+              title="Essential Questions"
+              icon="help-circle-outline"
+              isExpanded={expandedSections.has('essentialQuestions' as SectionKey)}
+              onToggle={() => toggleSection('essentialQuestions' as SectionKey)}
+            >
+              <View style={styles.sectionContent}>
+                {entry.reflectionIntegration.essentialQuestions.presence && (
+                  <DetailItem label="Presence (Nowness & Clarity)">
+                    <Text style={styles.responseText}>
+                      {entry.reflectionIntegration.essentialQuestions.presence}
+                    </Text>
+                  </DetailItem>
+                )}
+
+                {entry.reflectionIntegration.essentialQuestions.lettingGo && (
+                  <DetailItem label="Letting Go (Non-Attachment & Self-Reliance)">
+                    <Text style={styles.responseText}>
+                      {entry.reflectionIntegration.essentialQuestions.lettingGo}
+                    </Text>
+                  </DetailItem>
+                )}
+              </View>
+            </AccordionSection>
+          )}
         </ScrollView>
       </View>
     </Modal>

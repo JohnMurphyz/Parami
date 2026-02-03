@@ -61,7 +61,8 @@ export async function initializeContent(): Promise<void> {
     // Step 2: Background sync (non-blocking)
     // Don't await - let it run in background
     syncContentInBackground().catch(error => {
-      logger.error('Background sync failed', error);
+      // Errors are already logged inside syncContentInBackground
+      // This catch prevents unhandled promise rejection warnings
     });
 
     logger.info('Content initialization complete');
@@ -181,8 +182,17 @@ async function syncContentInBackground(): Promise<void> {
     await saveToCache(newContent);
 
     logger.info(`Content updated successfully to version ${remoteVersion}`);
-  } catch (error) {
-    logger.error('Background sync failed', error);
+  } catch (error: any) {
+    // Handle offline errors more gracefully
+    const isOfflineError = error?.code === 'unavailable' ||
+                          error?.message?.includes('client is offline') ||
+                          error?.message?.includes('network');
+
+    if (isOfflineError) {
+      logger.info('Background sync skipped - device is offline');
+    } else {
+      logger.error('Background sync failed', error);
+    }
     // Don't throw - app continues with cached content
   } finally {
     isSyncing = false;

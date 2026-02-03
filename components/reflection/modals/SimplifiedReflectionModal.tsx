@@ -430,10 +430,10 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingRight: 50,
+    paddingTop: 30,
     paddingBottom: 16,
     backgroundColor: Colors.pureWhite,
   },

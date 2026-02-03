@@ -327,7 +327,14 @@ export default function StructuredReflectionModal({
       case 'dailyPrompts':
         return (
           <DailyPromptsSection
-            data={reflection.dailyPrompts}
+            data={
+              reflection.dailyPrompts || {
+                selfReliance: '',
+                nowness: '',
+                nonAttachment: '',
+                clarity: '',
+              }
+            }
             onChange={(data) =>
               setReflection({ ...reflection, dailyPrompts: data })
             }
@@ -473,6 +480,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 60,
     paddingHorizontal: 20,
+    paddingRight: 50,
     paddingBottom: 16,
     backgroundColor: Colors.pureWhite,
     borderBottomWidth: 1,
@@ -487,6 +495,7 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     flex: 1,
+    alignItems: 'center',
   },
   headerTitle: {
     ...Typography.h2,

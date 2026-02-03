@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { loadAllReflectionEntries } from '../services/storageService';
 import { getParamiById } from '../services/firebaseContentService';
-import { ReflectionEntry, StructuredReflection } from '../types';
+import { ReflectionEntry, StructuredReflection, SimplifiedReflection } from '../types';
 import { Colors } from '../constants/Colors';
 import { Typography } from '../constants/Typography';
 import { logger } from '../utils/logger';
@@ -21,7 +21,7 @@ export default function EntriesScreen() {
   const [loading, setLoading] = useState(true);
   const [selectedParamiIds, setSelectedParamiIds] = useState<number[]>([]);
   const [entryTypeFilter, setEntryTypeFilter] = useState<EntryTypeFilter>('all');
-  const [selectedStructuredEntry, setSelectedStructuredEntry] = useState<StructuredReflection | null>(null);
+  const [selectedStructuredEntry, setSelectedStructuredEntry] = useState<StructuredReflection | SimplifiedReflection | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function EntriesScreen() {
     }
   };
 
-  const handleStructuredEntryPress = (entry: StructuredReflection) => {
+  const handleStructuredEntryPress = (entry: StructuredReflection | SimplifiedReflection) => {
     setSelectedStructuredEntry(entry);
     setShowDetailModal(true);
   };
@@ -71,7 +71,7 @@ export default function EntriesScreen() {
   if (entryTypeFilter === 'quick') {
     filteredEntries = filteredEntries.filter(entry => entry.type === 'unstructured');
   } else if (entryTypeFilter === 'deep') {
-    filteredEntries = filteredEntries.filter(entry => entry.type === 'structured');
+    filteredEntries = filteredEntries.filter(entry => entry.type === 'structured' || entry.type === 'simplified');
   }
 
   if (loading) {
@@ -142,7 +142,7 @@ export default function EntriesScreen() {
                   entryTypeFilter === 'deep' && styles.filterButtonTextActive,
                 ]}
               >
-                Deep Reflections
+                Deep
               </Text>
             </TouchableOpacity>
 
@@ -167,7 +167,7 @@ export default function EntriesScreen() {
                   entryTypeFilter === 'quick' && styles.filterButtonTextActive,
                 ]}
               >
-                Quick Entries
+                Quick
               </Text>
             </TouchableOpacity>
           </View>
@@ -224,8 +224,8 @@ export default function EntriesScreen() {
             const parami = getParamiById(entry.paramiId);
             if (!parami) return null;
 
-            // Render structured entry card
-            if (entry.type === 'structured') {
+            // Render structured or simplified entry card
+            if (entry.type === 'structured' || entry.type === 'simplified') {
               return (
                 <StructuredEntryCard
                   key={entry.id}
@@ -237,19 +237,25 @@ export default function EntriesScreen() {
             }
 
             // Render unstructured entry card
-            return (
-              <View key={entry.id} style={styles.entryCard}>
-                <View style={styles.entryHeader}>
-                  <Text style={styles.entryDate}>
-                    {formatDate(entry.date)}
-                  </Text>
-                  <Text style={styles.paramiName}>
-                    {parami.name} — {parami.englishName}
+            if (entry.type === 'unstructured') {
+              return (
+                <View key={entry.id} style={styles.entryCard}>
+                  <View style={styles.entryHeader}>
+                    <Text style={styles.entryDate}>
+                      {formatDate(entry.date)}
+                    </Text>
+                    <Text style={styles.paramiName}>
+                      {parami.name} — {parami.englishName}
+                    </Text>
+                  </View>
+                  <Text style={styles.entryContent} numberOfLines={4}>
+                    {entry.content}
                   </Text>
                 </View>
-                <Text style={styles.entryContent}>{entry.content}</Text>
-              </View>
-            );
+              );
+            }
+
+            return null;
           })
         )}
         </View>
@@ -387,9 +393,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     borderRadius: 8,
-    gap: 6,
+    gap: 4,
   },
   filterButtonActive: {
     backgroundColor: Colors.pureWhite,
@@ -404,6 +410,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.deepStone,
     fontWeight: '500',
+    textAlign: 'center',
   },
   filterButtonTextActive: {
     color: Colors.saffronGold,
