@@ -2,7 +2,7 @@ module.exports = {
   expo: {
     name: "Parami",
     slug: "parami-app",
-    version: "1.0.0",
+    version: "1.1.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
@@ -15,7 +15,12 @@ module.exports = {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.parami.app"
+      bundleIdentifier: "com.parami.app",
+      buildNumber: "2",
+      infoPlist: {
+        NSUserTrackingUsageDescription: "This allows us to provide you with a personalized experience.",
+        UIBackgroundModes: ["remote-notification"]
+      }
     },
     android: {
       adaptiveIcon: {

@@ -135,7 +135,6 @@ export default function QuizScreen() {
           <Ionicons name="close" size={24} color={Colors.deepCharcoal} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>The Crossing Over Diagnostic</Text>
-        <View style={styles.exitButton} />
       </View>
 
       <ScrollView
@@ -255,11 +254,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 20,
     backgroundColor: Colors.warmStone,
+    gap: 16,
   },
   exitButton: {
     width: 40,
@@ -277,6 +276,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     ...Typography.h2,
     color: Colors.deepCharcoal,
+    flex: 1,
   },
   scrollView: {
     flex: 1,

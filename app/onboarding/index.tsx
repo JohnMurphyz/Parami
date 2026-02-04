@@ -1,31 +1,102 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Animated } from 'react-native';
+import { useEffect, useRef } from 'react';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
 
 export default function WelcomeScreen() {
+  const headerOpacity = useRef(new Animated.Value(0)).current;
+  const headerTranslateY = useRef(new Animated.Value(100)).current;
+  const imageOpacity = useRef(new Animated.Value(0)).current;
+  const imageTranslateY = useRef(new Animated.Value(100)).current;
+  const cardOpacity = useRef(new Animated.Value(1)).current;
+  const cardTranslateY = useRef(new Animated.Value(500)).current;
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(headerOpacity, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(headerTranslateY, {
+          toValue: 0,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(imageOpacity, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(imageTranslateY, {
+          toValue: 0,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.timing(cardOpacity, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(cardTranslateY, {
+          toValue: 0,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, []);
+
   const handleGetStarted = () => {
     router.push('/onboarding/permissions');
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            opacity: headerOpacity,
+            transform: [{ translateY: headerTranslateY }],
+          },
+        ]}
+      >
         <Text style={styles.title}>Welcome to Paramis</Text>
         <Text style={styles.subtitle}>
           Daily wisdom and practice for spiritual growth
         </Text>
-      </View>
+      </Animated.View>
 
-      <View style={styles.imageContainer}>
+      <Animated.View
+        style={[
+          styles.imageContainer,
+          {
+            opacity: imageOpacity,
+            transform: [{ translateY: imageTranslateY }],
+          },
+        ]}
+      >
         <Image
           source={require('../../assets/wisdom-image.jpeg')}
           style={styles.image}
           resizeMode="cover"
         />
-      </View>
+      </Animated.View>
 
-      <View style={styles.infoCard}>
+      <Animated.View
+        style={[
+          styles.infoCard,
+          {
+            opacity: cardOpacity,
+            transform: [{ translateY: cardTranslateY }],
+          },
+        ]}
+      >
         <View style={styles.cardContent}>
           <Text style={styles.infoTitle}>Your Daily Practice</Text>
           <Text style={styles.infoText}>
@@ -47,7 +118,7 @@ export default function WelcomeScreen() {
         >
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </ScrollView>
   );
 }

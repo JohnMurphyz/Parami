@@ -45,6 +45,7 @@ export default function HomeScreen() {
   const [favoritedPractices, setFavoritedPractices] = useState<Set<string>>(new Set());
   const initializedParamiId = useRef<number | null>(null);
   const cardOpacities = useRef<{[key: string]: Animated.Value}>({});
+  const allShownPracticeIds = useRef<string[]>([]);
 
   useEffect(() => {
     loadTodayParami();
@@ -173,12 +174,10 @@ export default function HomeScreen() {
 
     setVisiblePractices(initialPractices);
     setDismissedPracticeIds([]);
+    allShownPracticeIds.current = [...initialPractices.map(p => p.id), ...completedPreviously];
 
     // Check if there are more practices after showing initial 3
-    const hasMore = hasMorePractices(todayParamiId, [
-      ...initialPractices.map(p => p.id),
-      ...completedPreviously
-    ]);
+    const hasMore = hasMorePractices(todayParamiId, allShownPracticeIds.current);
     setAllPracticesExhausted(!hasMore);
 
     // Initialize opacities
@@ -202,70 +201,11 @@ export default function HomeScreen() {
       // After fade out, update state
       setDismissedPracticeIds(prevDismissed => [...prevDismissed, practiceId]);
 
-      setVisiblePractices(prevVisible => {
-        if (todayParamiId === null) return prevVisible;
-
-        // Find the index of the card being replaced
-        const indexToReplace = prevVisible.findIndex(p => p.id === practiceId);
-        if (indexToReplace === -1) return prevVisible;
-
-        // Calculate all shown IDs (including what we're dismissing, what's visible, and previously completed)
-        const allShownIds = Array.from(new Set([
-          ...prevVisible.map(p => p.id),
-          ...dismissedPracticeIds,
-          ...practicesCompletedPreviously,
-          practiceId,
-        ]));
-
-        // Get next practice
-        const nextPractice = getNextPractice(todayParamiId, allShownIds);
-
-        if (nextPractice) {
-          // Initialize new card opacity at 0 and fade in
-          const newOpacity = getCardOpacity(nextPractice.id);
-          newOpacity.setValue(0);
-          Animated.timing(newOpacity, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-          }).start();
-
-          // Replace the card at the same index position
-          const updated = [...prevVisible];
-          updated[indexToReplace] = nextPractice;
-
-          // Check if there are still more practices after this replacement
-          const allShownAfterReplacement = [...allShownIds, nextPractice.id];
-          const stillHasMore = hasMorePractices(todayParamiId, allShownAfterReplacement);
-          setAllPracticesExhausted(!stillHasMore);
-
-          return updated;
-        } else {
-          // No more practices available
-          setAllPracticesExhausted(true);
-        }
-
-        return prevVisible;
-      });
-    });
-  }, [todayParamiId, dismissedPracticeIds, practicesCompletedPreviously]);
-
-  const handleAddPractice = useCallback(() => {
-    if (todayParamiId === null) return;
-
-    setVisiblePractices(prevVisible => {
-      // Calculate all shown IDs
-      const allShownIds = Array.from(new Set([
-        ...prevVisible.map(p => p.id),
-        ...dismissedPracticeIds,
-        ...practicesCompletedPreviously,
-      ]));
-
-      // Get next practice
-      const nextPractice = getNextPractice(todayParamiId, allShownIds);
+      // Get next practice using the ref
+      const nextPractice = getNextPractice(todayParamiId, allShownPracticeIds.current);
 
       if (nextPractice) {
-        // Initialize new card opacity and fade in
+        // Initialize new card opacity at 0 and fade in
         const newOpacity = getCardOpacity(nextPractice.id);
         newOpacity.setValue(0);
         Animated.timing(newOpacity, {
@@ -274,23 +214,59 @@ export default function HomeScreen() {
           useNativeDriver: true,
         }).start();
 
-        // Add to end of array
-        const updated = [...prevVisible, nextPractice];
+        // Update the ref immediately
+        allShownPracticeIds.current = [...allShownPracticeIds.current, nextPractice.id];
+
+        // Update visible practices - replace at the index
+        setVisiblePractices(prevVisible => {
+          const indexToReplace = prevVisible.findIndex(p => p.id === practiceId);
+          if (indexToReplace === -1) return prevVisible;
+
+          const updated = [...prevVisible];
+          updated[indexToReplace] = nextPractice;
+          return updated;
+        });
 
         // Check if there are still more practices
-        const allShownAfterAdd = [...allShownIds, nextPractice.id];
-        const stillHasMore = hasMorePractices(todayParamiId, allShownAfterAdd);
+        const stillHasMore = hasMorePractices(todayParamiId, allShownPracticeIds.current);
         setAllPracticesExhausted(!stillHasMore);
-
-        return updated;
       } else {
-        // No more practices
+        // No more practices available
         setAllPracticesExhausted(true);
       }
-
-      return prevVisible;
     });
-  }, [todayParamiId, dismissedPracticeIds, practicesCompletedPreviously]);
+  }, [todayParamiId]);
+
+  const handleAddPractice = useCallback(() => {
+    if (todayParamiId === null) return;
+
+    // Get next practice using the ref (synchronous access to latest value)
+    const nextPractice = getNextPractice(todayParamiId, allShownPracticeIds.current);
+
+    if (nextPractice) {
+      // Initialize new card opacity and fade in
+      const newOpacity = getCardOpacity(nextPractice.id);
+      newOpacity.setValue(0);
+      Animated.timing(newOpacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+
+      // Update the ref immediately (synchronous)
+      allShownPracticeIds.current = [...allShownPracticeIds.current, nextPractice.id];
+
+      // Add to visible practices
+      setVisiblePractices(prevVisible => [...prevVisible, nextPractice]);
+
+      // Check if there are still more practices
+      const stillHasMore = hasMorePractices(todayParamiId, allShownPracticeIds.current);
+      setAllPracticesExhausted(!stillHasMore);
+    } else {
+      // No more practices
+      setAllPracticesExhausted(true);
+    }
+  }, [todayParamiId]);
 
   const handleTogglePractice = useCallback(async (practiceId: string) => {
     if (todayParamiId === null) return;
@@ -389,6 +365,7 @@ export default function HomeScreen() {
   const handleResetPractices = () => {
     setDismissedPracticeIds([]);
     setPracticesCompletedPreviously([]);
+    allShownPracticeIds.current = [];
     setAllPracticesExhausted(false);
     initializeVisiblePractices();
   };

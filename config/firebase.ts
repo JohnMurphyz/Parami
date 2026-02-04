@@ -7,14 +7,24 @@ import { logger } from '../utils/logger';
  * Firebase configuration loaded from environment variables
  */
 const firebaseConfig = {
-  apiKey: Constants.expoConfig?.extra?.firebaseApiKey,
-  authDomain: Constants.expoConfig?.extra?.firebaseAuthDomain,
-  projectId: Constants.expoConfig?.extra?.firebaseProjectId,
-  storageBucket: Constants.expoConfig?.extra?.firebaseStorageBucket,
-  messagingSenderId: Constants.expoConfig?.extra?.firebaseMessagingSenderId,
-  appId: Constants.expoConfig?.extra?.firebaseAppId,
-  measurementId: Constants.expoConfig?.extra?.firebaseMeasurementId,
+  apiKey: Constants.expoConfig?.extra?.firebaseApiKey || 'AIzaSyC16Bbc8NqpgT03AuY14WKAuPrGUp5wkLU',
+  authDomain: Constants.expoConfig?.extra?.firebaseAuthDomain || 'parami-app.firebaseapp.com',
+  projectId: Constants.expoConfig?.extra?.firebaseProjectId || 'parami-app',
+  storageBucket: Constants.expoConfig?.extra?.firebaseStorageBucket || 'parami-app.firebasestorage.app',
+  messagingSenderId: Constants.expoConfig?.extra?.firebaseMessagingSenderId || '929149012360',
+  appId: Constants.expoConfig?.extra?.firebaseAppId || '1:929149012360:web:7155c3cf60693bd698523d',
+  measurementId: Constants.expoConfig?.extra?.firebaseMeasurementId || 'G-1XN30JKHRN',
 };
+
+// Validate configuration
+const missingKeys = Object.entries(firebaseConfig)
+  .filter(([_, value]) => !value || value === 'undefined')
+  .map(([key]) => key);
+
+if (missingKeys.length > 0) {
+  logger.error('Missing Firebase configuration keys:', missingKeys);
+  throw new Error(`Missing Firebase configuration: ${missingKeys.join(', ')}`);
+}
 
 /**
  * Initialize Firebase app (singleton pattern)

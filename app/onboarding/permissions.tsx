@@ -1,22 +1,63 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { Typography } from '../../constants/Typography';
-import { requestNotificationPermissions } from '../../services/notificationService';
+import { requestNotificationPermissions, scheduleNotification } from '../../services/notificationService';
 import { updatePreference } from '../../services/storageService';
+import { formatTimeDisplay, timeStringToDate } from '../../utils/dateUtils';
 import { logger } from '../../utils/logger';
 
 export default function PermissionsScreen() {
   const [isRequesting, setIsRequesting] = useState(false);
+  const [notificationTime, setNotificationTime] = useState('09:00');
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [tempTime, setTempTime] = useState(timeStringToDate('09:00'));
+
+  const handleTimeChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowTimePicker(false);
+    }
+
+    if (selectedDate) {
+      setTempTime(selectedDate);
+
+      if (Platform.OS === 'android') {
+        saveTimeChange(selectedDate);
+      }
+    }
+  };
+
+  const handleTimePress = () => {
+    setShowTimePicker(true);
+  };
+
+  const handleTimeDone = () => {
+    setShowTimePicker(false);
+    saveTimeChange(tempTime);
+  };
+
+  const saveTimeChange = (date: Date) => {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const timeString = `${hours}:${minutes}`;
+    setNotificationTime(timeString);
+  };
 
   const handleEnableNotifications = async () => {
     setIsRequesting(true);
     try {
       const hasPermission = await requestNotificationPermissions();
       await updatePreference('notificationsEnabled', hasPermission);
-      router.push('/onboarding/time-setup');
+      await updatePreference('notificationTime', notificationTime);
+
+      if (hasPermission) {
+        await scheduleNotification(notificationTime);
+      }
+
+      router.push('/onboarding/quiz-prompt');
     } catch (error) {
       logger.error('Error requesting permissions', error);
     } finally {
@@ -26,7 +67,7 @@ export default function PermissionsScreen() {
 
   const handleSkip = async () => {
     await updatePreference('notificationsEnabled', false);
-    router.push('/onboarding/time-setup');
+    router.push('/onboarding/quiz-prompt');
   };
 
   return (
@@ -37,28 +78,53 @@ export default function PermissionsScreen() {
         </View>
       </View>
 
-      <View style={styles.textContent}>
-        <Text style={styles.title}>Daily Reminders</Text>
-        <Text style={styles.description}>
-          Receive a gentle daily notification to remind you of your Parami practice.
-        </Text>
+      <Text style={styles.title}>Daily Reminders</Text>
+      <Text style={styles.description}>
+        Get a gentle reminder each day for your Parami practice
+      </Text>
 
-        <View style={styles.benefitsCard}>
-          <Text style={styles.benefitsTitle}>Why enable notifications?</Text>
-          <View style={styles.benefit}>
-            <Ionicons name="checkmark-circle" size={20} color={Colors.saffronGold} />
-            <Text style={styles.benefitText}>Stay consistent with daily practice</Text>
-          </View>
-          <View style={styles.benefit}>
-            <Ionicons name="checkmark-circle" size={20} color={Colors.saffronGold} />
-            <Text style={styles.benefitText}>Get reminded at your preferred time</Text>
-          </View>
-          <View style={styles.benefit}>
-            <Ionicons name="checkmark-circle" size={20} color={Colors.saffronGold} />
-            <Text style={styles.benefitText}>Build a meaningful daily habit</Text>
-          </View>
-        </View>
+      <View style={styles.timeCard}>
+        <Text style={styles.timeLabel}>Reminder time</Text>
+        <TouchableOpacity
+          style={styles.timeButton}
+          onPress={handleTimePress}
+          accessibilityLabel={`Notification time: ${formatTimeDisplay(notificationTime)}`}
+          accessibilityHint="Opens time picker to select daily reminder time"
+          accessibilityRole="button"
+        >
+          <Text style={styles.timeButtonText}>{formatTimeDisplay(notificationTime)}</Text>
+        </TouchableOpacity>
       </View>
+
+      {showTimePicker && Platform.OS === 'ios' && (
+        <View style={styles.pickerContainer}>
+          <DateTimePicker
+            value={tempTime}
+            mode="time"
+            display="spinner"
+            onChange={handleTimeChange}
+            textColor={Colors.deepCharcoal}
+          />
+          <TouchableOpacity
+            style={styles.doneButton}
+            onPress={handleTimeDone}
+            accessibilityLabel="Done selecting time"
+            accessibilityHint="Saves the selected notification time"
+            accessibilityRole="button"
+          >
+            <Text style={styles.doneButtonText}>Done</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {showTimePicker && Platform.OS === 'android' && (
+        <DateTimePicker
+          value={tempTime}
+          mode="time"
+          display="default"
+          onChange={handleTimeChange}
+        />
+      )}
 
       <View style={styles.buttons}>
         <TouchableOpacity
@@ -78,7 +144,7 @@ export default function PermissionsScreen() {
           style={styles.secondaryButton}
           onPress={handleSkip}
           accessibilityLabel="Skip notifications"
-          accessibilityHint="Continues to time setup without enabling notifications"
+          accessibilityHint="Continues without enabling notifications"
           accessibilityRole="button"
         >
           <Text style={styles.secondaryButtonText}>Skip for Now</Text>
@@ -94,9 +160,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.warmStone,
   },
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
     paddingTop: 80,
     paddingBottom: 40,
+    justifyContent: 'center',
+    flexGrow: 1,
   },
   iconContainer: {
     alignItems: 'center',
@@ -112,9 +180,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.saffronGold40,
   },
-  textContent: {
-    marginBottom: 32,
-  },
   title: {
     ...Typography.h1,
     color: Colors.deepCharcoal,
@@ -125,33 +190,59 @@ const styles = StyleSheet.create({
     ...Typography.bodyLarge,
     color: Colors.mediumStone,
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 48,
   },
-  benefitsCard: {
+  timeCard: {
     backgroundColor: Colors.pureWhite,
-    padding: 24,
+    padding: 32,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginBottom: 40,
+    shadowColor: Colors.deepCharcoal,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  timeLabel: {
+    ...Typography.body,
+    color: Colors.mediumStone,
+    marginBottom: 16,
+    fontWeight: '600',
+  },
+  timeButton: {
+    backgroundColor: Colors.saffronGold,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
     borderRadius: 16,
+  },
+  timeButtonText: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: Colors.pureWhite,
+  },
+  pickerContainer: {
+    backgroundColor: Colors.pureWhite,
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 16,
     shadowColor: Colors.deepCharcoal,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 2,
   },
-  benefitsTitle: {
-    ...Typography.h3,
-    color: Colors.deepCharcoal,
-    marginBottom: 16,
-  },
-  benefit: {
-    flexDirection: 'row',
+  doneButton: {
+    backgroundColor: Colors.saffronGold,
+    paddingVertical: 12,
+    borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 12,
-    gap: 12,
+    marginTop: 12,
   },
-  benefitText: {
-    ...Typography.body,
-    color: Colors.deepStone,
-    flex: 1,
+  doneButtonText: {
+    ...Typography.h3,
+    color: Colors.pureWhite,
+    fontWeight: '700',
   },
   buttons: {
     gap: 12,
