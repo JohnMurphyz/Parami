@@ -10,7 +10,7 @@ module.exports = {
     scheme: "parami",
     splash: {
       image: "./assets/splash-icon.png",
-      resizeMode: "contain",
+      resizeMode: "cover",
       backgroundColor: "#3d4e3a"
     },
     ios: {
@@ -18,7 +18,6 @@ module.exports = {
       bundleIdentifier: "com.parami.app",
       buildNumber: "2",
       infoPlist: {
-        NSUserTrackingUsageDescription: "This allows us to provide you with a personalized experience.",
         UIBackgroundModes: ["remote-notification"]
       }
     },

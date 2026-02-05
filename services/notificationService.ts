@@ -137,6 +137,20 @@ export async function scheduleNotification(time: string = '09:00'): Promise<{ su
     }
 
     // Schedule daily repeating notification
+    // Android and iOS use different trigger types
+    const trigger = Platform.OS === 'android'
+      ? {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
+          hour: hours,
+          minute: minutes,
+        }
+      : {
+          type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+          hour: hours,
+          minute: minutes,
+          repeats: true,
+        };
+
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
         title: `Today's Parami: ${parami.englishName}`,
@@ -147,12 +161,7 @@ export async function scheduleNotification(time: string = '09:00'): Promise<{ su
           channelId: 'daily-parami',
         }),
       },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-        hour: hours,
-        minute: minutes,
-        repeats: true,
-      },
+      trigger,
     });
 
     logger.info(`Notification scheduled for ${time} daily with ID: ${notificationId}`);

@@ -51,10 +51,10 @@ export function useNotifications() {
         return;
       }
 
-      // Request permissions first
-      const hasPermission = await requestNotificationPermissions();
-      if (!hasPermission) {
-        logger.info('Notification permissions not granted');
+      // Check if we already have permissions (don't request again)
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        logger.info('Notification permissions not granted, skipping schedule');
         return;
       }
 
